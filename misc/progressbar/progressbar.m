@@ -120,6 +120,13 @@ function remain_time_string = progressbar(varargin)
 % 2010-Sep-21   Major overhaul to support multiple bars and add labels
 %
 % 2011-Oct-17   Jojo: remain_time_string added for Display of % and time in console 
+
+%% security check - is graphics part available?
+    if ( ~usejava('awt') )
+        return;
+    end
+    
+%%
 remain_time_string = '';
 
 persistent progfig progdata lastupdate

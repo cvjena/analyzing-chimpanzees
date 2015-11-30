@@ -34,32 +34,39 @@ function [ idxTrain, idxTest ] = split_chimpansees_for_regression (  dataset, i_
         f_intervalNext = f_intervals(idx+1);
         
         if idx==1
-            b_idxOfClassExamples = (dataset.f_ages >= f_interval )    & ...
+            b_idxOfAgeExamples = (dataset.f_ages >= f_interval )    & ...
                                    (dataset.f_ages <= f_intervalNext ) & ...        
                                    dataset.b_idxValid ;
         else
-            b_idxOfClassExamples = (dataset.f_ages > f_interval )    & ...
+            b_idxOfAgeExamples = (dataset.f_ages > f_interval )    & ...
                                    (dataset.f_ages <= f_intervalNext ) & ...        
                                    dataset.b_idxValid ;            
         end
 
-        i_idxOfClassExamples = find(  b_idxOfClassExamples  );
+        i_idxOfAgeExamples = find(  b_idxOfAgeExamples  );
         
         % security check
-        if length(i_idxOfClassExamples) < (i_numTrainPerAge + i_numTestPerAge)
-            s_error = sprintf( 'To few examples for interval %03d', idx );
-            throw(s_error)
-        end                               
-                               
-        i_perm = randperm( length(i_idxOfClassExamples) ); 
-        
-        if ( i_numTrainPerClass < 1)
-        	i_numTrain = floor ( i_numTrainPerClass * length(i_idxOfClassExamples) );
+        if ( isempty( i_numTestPerAge ) )
+            if ( length(i_idxOfAgeExamples) < (i_numTrainPerAge) )      
+                continue;
+            end            
         else
-            i_numTrain = i_numTrainPerClass;
+            if ( length(i_idxOfAgeExamples) < (i_numTrainPerAge + i_numTestPerAge) )
+                s_error = sprintf( 'To few examples for interval %03d', idx );
+                throw(s_error)
+            end            
+        end
+                               
+                               
+        i_perm = randperm( length(i_idxOfAgeExamples) ); 
+        
+        if ( i_numTrainPerAge < 1)
+        	i_numTrain = floor ( i_numTrainPerAge * length(i_idxOfAgeExamples) );
+        else
+            i_numTrain = i_numTrainPerAge;
         end        
         
-        idxTrain = [ idxTrain; i_idxOfClassExamples( i_perm (1:i_numTrain) )];        
+        idxTrain = [ idxTrain; i_idxOfAgeExamples( i_perm (1:i_numTrain) )];        
  
              
          if ( (nargin >= 2 ) && (~isempty(i_numTestPerAge) ) && (~isinf( i_numTestPerAge )) )
@@ -67,10 +74,10 @@ function [ idxTrain, idxTest ] = split_chimpansees_for_regression (  dataset, i_
                         ((idx-1)*i_numTestPerAge+1): ...
                         ((idx)*i_numTestPerAge)...
                      ) = ...  
-                     i_idxOfClassExamples( i_perm  ((i_numTrain+1):(i_numTrain + i_numTestPerAge) ) );             
+                     i_idxOfAgeExamples( i_perm  ((i_numTrain+1):(i_numTrain + i_numTestPerAge) ) );             
          else
              idxTest = [ idxTest ; ...
-                         i_idxOfClassExamples( i_perm  ((i_numTrain+1):end ) );              ...
+                         i_idxOfAgeExamples( i_perm  ((i_numTrain+1):end ) );              ...
                        ];
 
          end             

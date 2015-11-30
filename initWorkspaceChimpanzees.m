@@ -20,8 +20,11 @@ function initWorkspaceChimpanzees
 
     %% setup paths of 3rd-party libraries in a user-specific manner
 
+    % identification
     LIBLINEARDIR        = [];
-    LIBLINEARWRAPPERDIR = [];    
+    LIBLINEARWRAPPERDIR = [];  
+    % age regression
+    GPMLDIR             = [];
         
     if strcmp( getenv('USER'), 'freytag')     
         [~, s_hostname]       = system( 'hostname' );
@@ -30,6 +33,8 @@ function initWorkspaceChimpanzees
         LIBLINEARDIR          = s_dest_liblinearbuild;
         
         LIBLINEARWRAPPERDIR   =  '/home/freytag/code/matlab/classifiers/liblinearWrapper/';
+        
+        GPMLDIR               = '/home/freytag/code/matlab/gpml/';
     else          
         fprintf('Unknown user %s and unknown default settings', getenv('USER') ); 
     end
@@ -85,6 +90,13 @@ function initWorkspaceChimpanzees
     addPathSafely ( s_pathIdent, b_recursive, b_overwrite )
     clear ( 's_pathIdent' );       
     
+    %%    
+    % everything for age estimation of chimpansees
+    b_recursive             = true; 
+    b_overwrite             = true;
+    s_pathAgeReg            = fullfile(pwd, 'age_regression');
+    addPathSafely ( s_pathAgeReg, b_recursive, b_overwrite )
+    clear ( 's_pathAgeReg' );      
 
         
     
@@ -107,10 +119,20 @@ function initWorkspaceChimpanzees
        initWorkspaceLibLinear;
        cd ( currentDir );       
     end     
-      
+    
+    if ( isempty(GPMLDIR) )
+        fprintf('initWSChimp-WARNING - no GPMLDIR dir found on your machine. Code is available at http://www.gaussianprocess.org/gpml/code/matlab/doc/ \n');
+    else
+        b_recursive             = true; 
+        b_overwrite             = true;
+        addPathSafely ( GPMLDIR, b_recursive, b_overwrite );     
+    end      
+          
     
     %% clean up    
     clear( 'LIBLINEARDIR' ); 
+    clear( 'LIBLINEARWRAPPERDIR' );
+    clear( 'GPMLDIR' );    
     
         
 end

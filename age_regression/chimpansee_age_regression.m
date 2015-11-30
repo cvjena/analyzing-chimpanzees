@@ -5,7 +5,7 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
     end
     
     settingsData = getFieldWithDefault( settings, 'settingsData', [] );
-    datasplits = getFieldWithDefault ( settingsData, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
+    datasplits = getFieldWithDefault ( settings, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
     results    = struct ( 's_name', {}, 'f_arr', {}, 'datasplits', datasplits);
     
     b_verbose  =  getFieldWithDefault ( settings, 'b_verbose', true );    
@@ -21,9 +21,9 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
     end    
     
     if ( isempty ( idxTrain ) || isempty ( idxTest ) ) 
-        i_numTrainPerClass     = getFieldWithDefault ( settingsData, 'i_numTrainPerAge', 0.9 );
-        i_numTrainMinPerClass  = getFieldWithDefault ( settingsData, 'i_numTestPerAge', '' );
-        i_numTestPerClass      = getFieldWithDefault ( settingsData, 'i_numIntervals', 5);
+        i_numTrainPerAge     = getFieldWithDefault ( settingsData, 'i_numTrainPerAge', 0.9 );
+        i_numTestPerAge  = getFieldWithDefault ( settingsData, 'i_numTestPerAge', '' );
+        i_numIntervals      = getFieldWithDefault ( settingsData, 'i_numIntervals', 5);
 
         % TODO show histogram of class frequencies...
         [ idxTrain, idxTest ] = split_chimpansees_for_regression (  ...
@@ -39,8 +39,17 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
     
     %% prepare data
     
+    if ( ~isfield ( settings, 's_destFeat' ) )
+        error ( 's_destFeat not specified in settings!') 
+    end
     featCNN = load ( settings.s_destFeat);
-    featCNN = cell2mat(featCNN.struct_feat);
+    if ( isfield ( featCNN, 'struct_feat' ) ) % compatibility with MatConvNet
+        featCNN = cell2mat(featCNN.struct_feat);
+    elseif ( isfield ( featCNN, 'feat' ) && isfield ( featCNN.feat, 'name' ) )   % compatibility with Caffe
+        featCNN = featCNN.feat.(featCNN.feat.name);
+    else
+        error ( 'CNN features not readable!' )
+    end
     
     dataTrain   = featCNN( :,idxTrain );
     labelsTrain = dataset_chimpansees.f_ages( idxTrain )';
