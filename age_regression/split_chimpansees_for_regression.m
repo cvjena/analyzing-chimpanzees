@@ -52,7 +52,7 @@ function [ idxTrain, idxTest ] = split_chimpansees_for_regression (  dataset, i_
             end            
         else
             if ( length(i_idxOfAgeExamples) < (i_numTrainPerAge + i_numTestPerAge) )
-                s_error = sprintf( 'To few examples for interval %03d', idx );
+                s_error = sprintf( 'Too few examples for interval %03d', idx );
                 throw(s_error)
             end            
         end

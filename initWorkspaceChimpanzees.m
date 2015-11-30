@@ -96,7 +96,15 @@ function initWorkspaceChimpanzees
     b_overwrite             = true;
     s_pathAgeReg            = fullfile(pwd, 'age_regression');
     addPathSafely ( s_pathAgeReg, b_recursive, b_overwrite )
-    clear ( 's_pathAgeReg' );      
+    clear ( 's_pathAgeReg' );  
+    
+    %%    
+    % everything for age group estimation (infant vs non-infant)
+    b_recursive             = true; 
+    b_overwrite             = true;
+    s_pathAgeGroupEst       = fullfile(pwd, 'age_group_classification');
+    addPathSafely ( s_pathAgeGroupEst, b_recursive, b_overwrite )
+    clear ( 's_pathAgeGroupEst' );      
 
         
     

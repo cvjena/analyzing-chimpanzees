@@ -1,5 +1,6 @@
 function results = chimpansee_age_regression( dataset_chimpansees, settings )
 
+    %% load settings
     if ( nargin < 2 ) 
         settings = [];
     end
@@ -10,7 +11,7 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
     
     b_verbose  =  getFieldWithDefault ( settings, 'b_verbose', true );    
 
-    %% load data and settings
+    
     %% load data split
     if ( ~isempty(  datasplits ) )
         idxTrain = getFieldWithDefault( datasplits,   'idxTrain', [] );
