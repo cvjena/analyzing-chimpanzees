@@ -5,7 +5,7 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
     end
     
     settingsData = getFieldWithDefault( settings, 'settingsData', [] );
-    datasplits = getFieldWithDefault ( settingsData, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
+    datasplits = getFieldWithDefault ( settings, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
     results    = struct ( 's_name', {}, 'f_arr', {}, 'datasplits', datasplits);
     
     b_verbose  =  getFieldWithDefault ( settings, 'b_verbose', true );
@@ -37,13 +37,22 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
     end    
     
     %% prepare data
-    featChimp     = load ( settings.s_destFeat);
-    featChimp     = cell2mat(featChimp.struct_feat);
+    if ( ~isfield ( settings, 's_destFeat' ) )
+        error ( 's_destFeat not specified in settings!') 
+    end
+    featCNN = load ( settings.s_destFeat);
+    if ( isfield ( featCNN, 'struct_feat' ) ) % compatibility with MatConvNet
+        featCNN = cell2mat(featCNN.struct_feat);
+    elseif ( isfield ( featCNN, 'feat' ) && isfield ( featCNN.feat, 'name' ) )   % compatibility with Caffe
+        featCNN = featCNN.feat.(featCNN.feat.name);
+    else
+        error ( 'CNN features not readable!' )
+    end
 
-    dataTrain     = featChimp( :,idxTrain );
+    dataTrain     = featCNN( :,idxTrain );
     labelsTrain   = dataset_chimpansees.f_labels( idxTrain )';
 
-    dataTest      = featChimp( :,idxTest );
+    dataTest      = featCNN( :,idxTest );
     labelsTest    = dataset_chimpansees.f_labels( idxTest )';
 
     % make labels consecutive if necessary
@@ -61,7 +70,7 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
     end
      
     
-    %% train regression model
+    %% train classification model
 
     b_recursive = true;
     b_overwrite = true;
