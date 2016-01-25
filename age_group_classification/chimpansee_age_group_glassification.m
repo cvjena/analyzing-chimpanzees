@@ -22,14 +22,16 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
     end  
     
     if ( isempty ( idxTrain ) || isempty ( idxTest ) ) 
-        i_numTrainPerAge    = getFieldWithDefault ( settingsData, 'i_numTrainPerClass', 0.9 );
-        i_numTestPerAge     = getFieldWithDefault ( settingsData, 'i_numTestPerClass', '' );
+        i_numTrainPerAgeGroup     = getFieldWithDefault ( settingsData, 'i_numTrainPerAgeGroup', 0.9 );
+        i_numTrainMinPerAgeGroup  = getFieldWithDefault ( settingsData, 'i_numTrainMinPerAgeGroup', 25 );        
+        i_numTestPerAgeGroup      = getFieldWithDefault ( settingsData, 'i_numTestPerAgeGroup', '' );
 
         % TODO show histogram of class frequencies...
         [ idxTrain, idxTest ] = split_chimpansees_for_age_group_classification (  ...
                 dataset_chimpansees, ...
-                i_numTrainPerAge, ...
-                i_numTestPerAge ...
+                i_numTrainPerAgeGroup, ...
+                i_numTrainMinPerAgeGroup, ...
+                i_numTestPerAgeGroup ...
                 );
         if ( getFieldWithDefault ( settingsData, 'b_data_reclassif', false ) )    
             idxTest = idxTrain;
@@ -52,10 +54,10 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
     end
     
     dataTrain   = featCNN( :,idxTrain );
-    labelsTrain = dataset_chimpansees.b_age_groups( idxTrain )';
+    labelsTrain = dataset_chimpansees.f_labels_age_groups( idxTrain )';
     
     dataTest   = featCNN( :,idxTest );
-    labelsTest = dataset_chimpansees.b_age_groups( idxTest )';
+    labelsTest = dataset_chimpansees.f_labels_age_groups( idxTest )';
     
     %% train classification model
     
@@ -75,7 +77,7 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
         progressbar ( 0 );
         for idxParam=1:length(f_paramC)
             settingsLibLinear.f_svm_C     =  f_paramC(idxParam);
-            scoresC(idxParam) = liblinear_train ( (2*labelsTrain-1)', sparse(double(dataTrain')), settingsLibLinear );
+            scoresC(idxParam) = liblinear_train ( labelsTrain', sparse(double(dataTrain')), settingsLibLinear );
             progressbar ( idxParam/double(length(f_paramC)) );
         end
         progressbar ( 1 );
@@ -85,38 +87,32 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
     else
         settingsLibLinear.f_svm_C     =  1;        
     end
-    
-    % run train method
-    % TODO do some kind of cross validation
-    svmmodel = liblinear_train ( (2*labelsTrain-1)', sparse(double(dataTrain')), settingsLibLinear );
-    
+        
     % run train method
     % now really ensure model training!
     settingsLibLinear.b_cross_val = false;
-    svmmodel = liblinear_train ( (2*labelsTrain-1)', sparse(double(dataTrain')), settingsLibLinear );
+    svmmodel = liblinear_train ( labelsTrain', sparse(double(dataTrain')), settingsLibLinear );
       
     
     %% apply model to test data
     
-   [~, ~, scores] =liblinear_test ( (2*labelsTest-1)',  sparse(double(dataTest')), svmmodel, settingsLibLinear );
+   [predicted_age_group, f_arr, scores] = liblinear_test ( labelsTest', sparse(double(dataTest')), svmmodel, settingsLibLinear );
    
-   [tp fp] = roc((~labelsTest), scores');
-   f_auc   = auroc(tp',fp');
   
     if ( b_verbose ) 
-        disp ( sprintf('score (AuROC): %f',f_auc) )
+        disp ( sprintf('arr: %f',f_auc) )
     end   
     
-    results                 = [];
-    results.f_auc           = f_auc;        
+    results                     = [];
+    results.f_arr               = f_arr;        
     %
-    mydatasetsplit.idxTrain = idxTrain;
-    mydatasetsplit.idxTest  = idxTest;    
-    results.datasplits      = mydatasetsplit;    
+    mydatasetsplit.idxTrain     = idxTrain;
+    mydatasetsplit.idxTest      = idxTest;    
+    results.datasplits          = mydatasetsplit;    
     %
-    results.age_group_est   = scores;    
-    results.labelsTest      = labelsTest;    
-    results.labelsTrain     = labelsTrain;    
+    results.predicted_age_group = predicted_age_group;    
+    results.labelsTest          = labelsTest;    
+    results.labelsTrain         = labelsTrain;    
    
     
 %     %% visualize results

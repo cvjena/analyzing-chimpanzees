@@ -1,4 +1,5 @@
-function b_age_groups = getAgeGroupAllChimpansees ( s_filelist )
+function s_age_groups = getAgeGroupAllChimpansees ( s_filelist )
+% function s_age_groups = getAgeGroupAllChimpansees ( s_filelist )
 
 
    % fileId value - open the file
@@ -13,7 +14,7 @@ function b_age_groups = getAgeGroupAllChimpansees ( s_filelist )
     fclose ( fid );
     
    
-    b_age_groups = [];
+    s_age_groups = {};
     
     %%
     
@@ -23,9 +24,9 @@ function b_age_groups = getAgeGroupAllChimpansees ( s_filelist )
         progressbar(s_fileIdx/double(i_len));        
         s_fn      = s_images{s_fileIdx};
                 
-        b_age_groupsTmp  = getBoolSingleChimpansee ( s_fn, 'AgeGroup', 'Infant' );
+        s_age_groupsTmp  = getStringSingleChimpansee ( s_fn, 'AgeGroup' );
         
-        b_age_groups     = [b_age_groups; b_age_groupsTmp];
+        s_age_groups     = [s_age_groups; s_age_groupsTmp];
          
     end
     progressbar(1);    

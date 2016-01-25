@@ -22,8 +22,8 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
     end    
     
     if ( isempty ( idxTrain ) || isempty ( idxTest ) ) 
-        i_numTrainPerAge     = getFieldWithDefault ( settingsData, 'i_numTrainPerAge', 0.9 );
-        i_numTestPerAge  = getFieldWithDefault ( settingsData, 'i_numTestPerAge', '' );
+        i_numTrainPerAge    = getFieldWithDefault ( settingsData, 'i_numTrainPerAge', 0.8 );
+        i_numTestPerAge     = getFieldWithDefault ( settingsData, 'i_numTestPerAge', '' );
         i_numIntervals      = getFieldWithDefault ( settingsData, 'i_numIntervals', 5);
 
         % TODO show histogram of class frequencies...

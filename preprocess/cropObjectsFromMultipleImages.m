@@ -50,7 +50,7 @@ function str_out = cropObjectsFromMultipleImages ( s_filelist, settings )
     fclose ( fid );
     
     settingsSpecific = [];
-    settingsSpecific.b_showCropped     = getFieldWithDefault( settings, 'b_showCropped', true );
+    settingsSpecific.b_showCropped     = getFieldWithDefault ( settings, 'b_showCropped', true );
     settingsSpecific.b_waitForInput    = getFieldWithDefault ( settings, 'b_waitForInput', true );
     settingsSpecific.b_closeCropped    = getFieldWithDefault ( settings, 'b_closeCropped', true );    
     settingsSpecific.b_saveCropped     = getFieldWithDefault ( settings, 'b_saveCropped', false );
@@ -76,7 +76,7 @@ function str_out = cropObjectsFromMultipleImages ( s_filelist, settings )
         str_results                 = cropObjectsFromSingleImage ( s_fn, settingsSpecific );
         s_fns_new                   = [s_fns_new;str_results.s_fns_new];
         if ( isfield ( str_results, 'f_keypoints' ) )
-            f_keypoints                   = [f_keypoints;str_results.f_keypoints];
+            f_keypoints             = [f_keypoints;str_results.f_keypoints];
         end
          
     end

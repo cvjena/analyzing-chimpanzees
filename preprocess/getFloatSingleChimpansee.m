@@ -10,6 +10,9 @@ function f_values  = getFloatSingleChimpansee ( s_fn, s_attribute )
     
     %%
     s_ending       = '.ic';
+    
+    image          = imread ( s_fn );        
+    
     s_fnMetaData   =  sprintf('%s%s', s_fn, s_ending );
 
     mystruct       = xml2struct ( s_fnMetaData );
@@ -50,8 +53,8 @@ function f_values  = getFloatSingleChimpansee ( s_fn, s_attribute )
 
                 xleft   = ceil(str2double(myobjects{idxObject}.region.points.point{1}.x.Text));
                 xright  = ceil(str2double(myobjects{idxObject}.region.points.point{3}.x.Text));
-                ytop    = ceil(str2double(myobjects{idxObject}.region.points.point{1}.x.Text));
-                ybottom = ceil(str2double(myobjects{idxObject}.region.points.point{3}.x.Text));      
+                ytop    = ceil(str2double(myobjects{idxObject}.region.points.point{1}.y.Text));
+                ybottom = ceil(str2double(myobjects{idxObject}.region.points.point{3}.y.Text));      
             end       
         catch err       % if field is not existent or empty...
             continue
@@ -59,7 +62,14 @@ function f_values  = getFloatSingleChimpansee ( s_fn, s_attribute )
 
         if ( ( (xright-xleft) <= 0 ) || ((ybottom-ytop) <= 0)  )
             continue;
-        end             
+        end 
+        
+         %imcrop ( image, [xmin ymin width height] )
+        subimg = imcrop ( image, [   xleft ytop     xright-xleft ybottom-ytop ] );
+
+        if ( isempty(subimg) )
+            continue;
+        end        
 
         % fetch age of object
         b_foundAttribute = false;

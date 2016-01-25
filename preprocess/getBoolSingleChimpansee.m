@@ -10,6 +10,9 @@ function b_values  = getBoolSingleChimpansee ( s_fn, s_attribute, s_positive )
     
     %%
     s_ending       = '.ic';
+    
+    image          = imread ( s_fn );        
+    
     s_fnMetaData   =  sprintf('%s%s', s_fn, s_ending );
 
     mystruct       = xml2struct ( s_fnMetaData );
@@ -47,10 +50,10 @@ function b_values  = getBoolSingleChimpansee ( s_fn, s_attribute, s_positive )
                % order of points is top left, top right, bottom right,
                % bottom left
 
-                xleft   = ceil(str2double(myobjects{idxObject}.region.points.point{1}.x.Text));
-                xright  = ceil(str2double(myobjects{idxObject}.region.points.point{3}.x.Text));
-                ytop    = ceil(str2double(myobjects{idxObject}.region.points.point{1}.x.Text));
-                ybottom = ceil(str2double(myobjects{idxObject}.region.points.point{3}.x.Text));      
+            xleft   = ceil(str2double(myobjects{idxObject}.region.points.point{1}.x.Text));
+            xright  = ceil(str2double(myobjects{idxObject}.region.points.point{3}.x.Text));
+            ytop    = ceil(str2double(myobjects{idxObject}.region.points.point{1}.y.Text));
+            ybottom = ceil(str2double(myobjects{idxObject}.region.points.point{3}.y.Text));      
             end       
         catch err       % if field is not existent or empty...
             continue
@@ -58,12 +61,19 @@ function b_values  = getBoolSingleChimpansee ( s_fn, s_attribute, s_positive )
 
         if ( ( (xright-xleft) <= 0 ) || ((ybottom-ytop) <= 0)  )
             continue;
-        end             
+        end            
+        
+         %imcrop ( image, [xmin ymin width height] )
+        subimg = imcrop ( image, [   xleft ytop     xright-xleft ybottom-ytop ] );
+
+        if ( isempty(subimg) )
+            continue;
+        end          
 
         % fetch age of object
         b_foundAttribute = false;
         for idxAttribute=1:i_numAttributes
-            if ( strcmp( myobjects{idxObject}.attributes.attribute{idxAttribute}.key.Text, 'Age') )
+            if ( strcmp( myobjects{idxObject}.attributes.attribute{idxAttribute}.key.Text, s_attribute) )
                 b_values = [ b_values ; ...
                            strcmp(myobjects{idxObject}.attributes.attribute{idxAttribute}.value.Text, s_positive)...
                         ];

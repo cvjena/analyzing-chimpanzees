@@ -71,33 +71,32 @@ function dataset_chimpansees = load_chimpansees ( s_destData, settings )
     end
     
     %% sanity check
-    b_validyChecks = {};
+    b_validityChecks = {};
 
     if ( b_load_age )
-        b_idxAgeValid      = ~isnan ( ageInfo.f_ages);
-        b_validyChecks{end+1}     = b_idxAgeValid;
+        b_idxAgeValid               = ~isnan ( ageInfo.f_ages);
+        b_validityChecks{end+1}     = b_idxAgeValid;
     end
         
     if ( b_load_gender )    
-        b_idxGenderValid   = ~isnan ( genderInfo.b_genders );
-        b_validyChecks{end+1}     = b_idxGenderValid;
+        b_idxGenderValid            = ~isnan ( genderInfo.b_genders );
+        b_validityChecks{end+1}     = b_idxGenderValid;
     end
     
     if ( b_load_age_group )
-        b_idxAgeGroupValid = ~isnan ( ageGroupInfo.b_age_groups );    
-        b_validyChecks{end+1}     = b_idxAgeGroupValid;        
+        b_validityChecks{end+1}     = ageGroupInfo.b_is_age_group_reliable;        
     end
     
     if ( b_load_identity )
-        b_validyChecks{end+1}     = identity_information.b_is_id_reliable;
+        b_validityChecks{end+1}     = identity_information.b_is_id_reliable;
     end
     
     b_idxValid = [];
-    for idxValCheck = 1:length(b_validyChecks)
+    for idxValCheck = 1:length(b_validityChecks)
         if ( isempty ( b_idxValid ) )
-            b_idxValid = b_validyChecks{idxValCheck};
+            b_idxValid = b_validityChecks{idxValCheck};
         else
-            b_idxValid = b_idxValid & b_validyChecks{idxValCheck};
+            b_idxValid = b_idxValid & b_validityChecks{idxValCheck};
         end
     end
 
@@ -114,7 +113,10 @@ function dataset_chimpansees = load_chimpansees ( s_destData, settings )
     end    
     
     if ( b_load_age_group )
-        dataset_chimpansees.b_age_groups     = ageGroupInfo.b_age_groups;           
+        dataset_chimpansees.s_possible_age_groups ...
+                                             = ageGroupInfo.s_possible_age_groups;
+        dataset_chimpansees.f_labels_age_groups  ...
+                                             = ageGroupInfo.f_labels_age_groups;        
     end
     
     if ( b_load_identity )
