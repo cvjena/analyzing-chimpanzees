@@ -5,7 +5,8 @@ function str_out = face_detector_ground_truth ( image, str_settings )
 %  INPUT:
 % 
 %  OUTPUT:
-%     str_out.i_face_regions = i_face_regions;    
+%     str_out.i_face_regions = i_face_regions;   kx4 double array , columns
+%                               indicate [xleft ytop     width height ]
 
     s_ending     = '.ic';
     s_fn         = str_settings.s_fn;
@@ -66,6 +67,6 @@ function str_out = face_detector_ground_truth ( image, str_settings )
     end
 
     %% assign output variables
-    str_out.i_face_regions = i_face_regions;    
+    str_out.i_face_regions = i_face_regions;        
     
 end
