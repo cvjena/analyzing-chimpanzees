@@ -100,7 +100,7 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
    
   
     if ( b_verbose ) 
-        disp ( sprintf('arr: %f',f_auc) )
+        disp ( sprintf('arr: %f',f_arr) )
     end   
     
     results                     = [];
