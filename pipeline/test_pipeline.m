@@ -78,9 +78,22 @@ str_settings.str_feature_extraction   = str_feature_extraction;
 % 
 % str_settings_novelty.b_do_novelty_detection = true;
 % 
-% %% settings for 3.2 - classify each face hypothesis (closed-sed)
-% str_settings.str_settings_identification = [];
-% str_settings_identification.b_do_identification = true;
+%% settings for 3.2 - classify each face hypothesis (closed-sed)
+str_identification = [];
+str_settings_tmp   = [];
+
+str_settings_tmp.b_do_identification = true;
+
+str_identifier                    = struct('name', 'Linear SVM', 'mfunction', @face_identifier_linear_SVM );
+
+%
+str_identification.str_identifier  ...
+                                  = str_identifier;
+str_identification.str_settings_identification ...
+                                  = str_settings_tmp;
+%
+str_settings.str_identification   = str_identification;
+
 % 
 % %% settings for 4 estimate age of each face hypothesis
 % str_settings.str_settings_age_estimation = [];
