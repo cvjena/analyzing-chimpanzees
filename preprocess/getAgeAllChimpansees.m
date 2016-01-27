@@ -23,7 +23,7 @@ function f_ages = getAgeAllChimpansees ( s_filelist )
         progressbar(s_fileIdx/double(i_len));        
         s_fn      = s_images{s_fileIdx};
                 
-        f_ageTmp  = getFloatSingleChimpansee ( s_fn, 'Age' );
+        f_ageTmp  = getFloatDataSingleImage ( s_fn, 'Age' );
         
         f_ages    = [f_ages; f_ageTmp];
          

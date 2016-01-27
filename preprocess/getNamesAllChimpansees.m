@@ -23,7 +23,7 @@ function s_names = getNamesAllChimpansees ( s_filelist )
         progressbar(s_fileIdx/double(i_len));
         s_fn      = s_images{s_fileIdx};
                 
-        s_namesTmp  = getStringSingleChimpansee ( s_fn, 'Identity' );
+        s_namesTmp  = getStringDataSingleImage ( s_fn, 'Identity' );
         
         s_names     = [s_names; s_namesTmp];
          

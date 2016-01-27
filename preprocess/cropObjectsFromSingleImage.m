@@ -40,95 +40,23 @@ function str_out = cropObjectsFromSingleImage ( s_fn, settings )
     b_saveCropped      = getFieldWithDefault ( settings, 'b_saveCropped', false );
     s_fnWrite          = getFieldWithDefault ( settings, 's_fnWrite', './');
     b_adaptKeypoints   = getFieldWithDefault ( settings, 'b_adaptKeypoints', false);
+    
+    str_regions        = getHeadRegionSingleImage ( s_fn, settings );
 
     
-    
-    %%
-    s_ending     = '.ic';
-    
-    image        = imread ( s_fn );
 
-    s_fnMetaData =  sprintf('%s%s', s_fn, s_ending );
-
-    mystruct     = xml2struct ( s_fnMetaData );
-
-    i_numObjects = length ( mystruct.image_content.objects.object );
+    i_numObjects = size ( str_regions.f_regions, 2 );
     
-    s_fns_new    = {};
-    
-    if ( b_adaptKeypoints )
-        f_keypoints    = inf(0,10); 
-        s_possible_keypoints = {'RightEye', 'LeftEye', 'MouthCenter', 'LeftEarlobe', 'RightEarlobe'};
-    end
-    
-    %% differentiate number of objects ... if only one object, accessing data is directly as variable.field. otherwise variable{idx}.field
-    %
-    if ( i_numObjects == 1 )
-        myobjects = {mystruct.image_content.objects.object};
-    else
-        myobjects = mystruct.image_content.objects.object(:);        
-    end
 
     for idxObject=1:i_numObjects
 
-        % fetch bounding box
-        if ( isfield ( myobjects{idxObject}.region, 'left') && ...
-             isfield ( myobjects{idxObject}.region, 'right') && ...
-             isfield ( myobjects{idxObject}.region, 'top') && ...
-             isfield ( myobjects{idxObject}.region, 'bottom')  ...
-            )                
-            xleft   = ceil(str2double(myobjects{idxObject}.region.left.Text) );
-            xright  = ceil(str2double(myobjects{idxObject}.region.right.Text) );
-            ytop    = ceil(str2double(myobjects{idxObject}.region.top.Text) );
-            ybottom = ceil(str2double(myobjects{idxObject}.region.bottom.Text) );  
-        elseif ( isfield ( myobjects{idxObject}.region, 'points') ...
-               )                
-           % order of points is top left, top right, bottom right,
-           % bottom left
-
-            xleft   = ceil(str2double(myobjects{idxObject}.region.points.point{1}.x.Text));
-            xright  = ceil(str2double(myobjects{idxObject}.region.points.point{3}.x.Text));
-            ytop    = ceil(str2double(myobjects{idxObject}.region.points.point{1}.y.Text));
-            ybottom = ceil(str2double(myobjects{idxObject}.region.points.point{3}.y.Text));      
-        end      
+	xleft  =     str_regions.f_regions( idxObject, 1 );
+	yleft  =     str_regions.f_regions( idxObject, 2 );
+	widtht =     str_regions.f_regions( idxObject, 3 );
+	height =     str_regions.f_regions( idxObject, 4 );	
 
          %imcrop ( image, [xmin ymin width height] )
-        subimg = imcrop ( image, [   xleft ytop     xright-xleft ybottom-ytop ] );
-
-        if ( isempty(subimg) )
-            continue;
-        end
-
-
-
-        if ( b_adaptKeypoints )
-            i_numKP = length(myobjects{idxObject}.markers.marker);
-            f_keypoints_tmp    = inf(1,10);
-            for idxKP = 1:i_numKP
-                try
-                    s_KP_name = myobjects{idxObject}.markers.marker{idxKP}.label.Text;                            
-                    f_KP_x    = ceil(str2double(myobjects{idxObject}.markers.marker{idxKP}.x.Text));
-                    f_KP_y    = ceil(str2double(myobjects{idxObject}.markers.marker{idxKP}.y.Text));                  
-
-                    f_KP_x    = f_KP_x - xleft;
-                    f_KP_y    = f_KP_y - ytop;
-
-                    i_idxKP   = find ( strcmp ( s_possible_keypoints, s_KP_name ) );
-
-                    f_keypoints_tmp ( 1, 2*i_idxKP-1 ) = f_KP_x;
-                    f_keypoints_tmp ( 1, 2*i_idxKP   ) = f_KP_y;
-                catch err
-                    % presumably some data was not correctly formated or
-                    % given...
-                    disp( 'keypoint is invalid');
-                    % we simply continue and let the information by
-                    % Inf to indicate the abscence of this keypoint
-                end 
-            end
-
-            f_keypoints = [f_keypoints; f_keypoints_tmp];                
-        end                
-
+        subimg = imcrop ( image, [   xleft ytop     width height ] );
 
 
         if ( b_showCropped )
@@ -137,7 +65,7 @@ function str_out = cropObjectsFromSingleImage ( s_fn, settings )
 
             if ( b_adaptKeypoints )
                 hold on;
-                kp_tmp = reshape ( f_keypoints_tmp, [2,5] );
+                kp_tmp = reshape ( str_regions.f_keypoints(idxObject,:), [2,5] );
                 plot ( kp_tmp(1,:), ...
                        kp_tmp(2,:), ...
                        'bx'...

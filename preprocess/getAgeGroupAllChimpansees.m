@@ -24,7 +24,7 @@ function s_age_groups = getAgeGroupAllChimpansees ( s_filelist )
         progressbar(s_fileIdx/double(i_len));        
         s_fn      = s_images{s_fileIdx};
                 
-        s_age_groupsTmp  = getStringSingleChimpansee ( s_fn, 'AgeGroup' );
+        s_age_groupsTmp  = getStringDataSingleImage ( s_fn, 'AgeGroup' );
         
         s_age_groups     = [s_age_groups; s_age_groupsTmp];
          

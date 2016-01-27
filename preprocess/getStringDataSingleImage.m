@@ -1,4 +1,4 @@
-function b_values  = getBoolSingleChimpansee ( s_fn, s_attribute, s_positive )
+function s_values  = getStringDataSingleImage ( s_fn, s_attribute )
 % 
 % BRIEF
 %  specifically taylored to meta-information provided by chimpansee
@@ -11,7 +11,7 @@ function b_values  = getBoolSingleChimpansee ( s_fn, s_attribute, s_positive )
     %%
     s_ending       = '.ic';
     
-    image          = imread ( s_fn );        
+    image          = imread ( s_fn );    
     
     s_fnMetaData   =  sprintf('%s%s', s_fn, s_ending );
 
@@ -25,43 +25,38 @@ function b_values  = getBoolSingleChimpansee ( s_fn, s_attribute, s_positive )
         myobjects = {mystruct.image_content.objects.object};
     else
         myobjects = mystruct.image_content.objects.object(:);        
-    end 
+    end    
     
-    b_values = [];
-   
+    s_values = {};
+    
     for idxObject=1:i_numObjects
         i_numAttributes = length(myobjects{idxObject}.attributes.attribute);    
 
-
         % check that the object contains a region. otherwise, we can not
-        % extract features...            
-        try
-            if ( isfield ( myobjects{idxObject}.region, 'left') && ...
-                 isfield ( myobjects{idxObject}.region, 'right') && ...
-                 isfield ( myobjects{idxObject}.region, 'top') && ...
-                 isfield ( myobjects{idxObject}.region, 'bottom')  ...
-                )                
-                xleft   = ceil(str2double(myobjects{idxObject}.region.left.Text) );
-                xright  = ceil(str2double(myobjects{idxObject}.region.right.Text) );
-                ytop    = ceil(str2double(myobjects{idxObject}.region.top.Text) );
-                ybottom = ceil(str2double(myobjects{idxObject}.region.bottom.Text) );  
-            elseif ( isfield ( myobjects{idxObject}.region, 'points') ...
-                   )                
-               % order of points is top left, top right, bottom right,
-               % bottom left
+        % extract features...             
+        if ( isfield ( myobjects{idxObject}.region, 'left') && ...
+             isfield ( myobjects{idxObject}.region, 'right') && ...
+             isfield ( myobjects{idxObject}.region, 'top') && ...
+             isfield ( myobjects{idxObject}.region, 'bottom')  ...
+            )                
+            xleft   = ceil(str2double(myobjects{idxObject}.region.left.Text) );
+            xright  = ceil(str2double(myobjects{idxObject}.region.right.Text) );
+            ytop    = ceil(str2double(myobjects{idxObject}.region.top.Text) );
+            ybottom = ceil(str2double(myobjects{idxObject}.region.bottom.Text) );  
+        elseif ( isfield ( myobjects{idxObject}.region, 'points') ...
+               )                
+           % order of points is top left, top right, bottom right,
+           % bottom left
 
             xleft   = ceil(str2double(myobjects{idxObject}.region.points.point{1}.x.Text));
             xright  = ceil(str2double(myobjects{idxObject}.region.points.point{3}.x.Text));
             ytop    = ceil(str2double(myobjects{idxObject}.region.points.point{1}.y.Text));
             ybottom = ceil(str2double(myobjects{idxObject}.region.points.point{3}.y.Text));      
-            end       
-        catch err       % if field is not existent or empty...
-            continue
-        end
+        end       
 
         if ( ( (xright-xleft) <= 0 ) || ((ybottom-ytop) <= 0)  )
             continue;
-        end            
+        end         
         
          %imcrop ( image, [xmin ymin width height] )
         subimg = imcrop ( image, [   xleft ytop     xright-xleft ybottom-ytop ] );
@@ -71,23 +66,23 @@ function b_values  = getBoolSingleChimpansee ( s_fn, s_attribute, s_positive )
         end          
 
         % fetch age of object
-        b_foundAttribute = false;
+        b_foundAttribute = false;                    
         for idxAttribute=1:i_numAttributes
             if ( strcmp( myobjects{idxObject}.attributes.attribute{idxAttribute}.key.Text, s_attribute) )
-                b_values = [ b_values ; ...
-                           strcmp(myobjects{idxObject}.attributes.attribute{idxAttribute}.value.Text, s_positive)...
-                        ];
+                s_values = [ s_values ; ...
+                             myobjects{idxObject}.attributes.attribute{idxAttribute}.value.Text...
+                           ];
                 b_foundAttribute = true;
                 break;
             end
         end
         if ( ~b_foundAttribute )
-                b_values = [ b_values ; ...
-                           NaN ...
+                s_values = [ s_values ; ...
+                           '' ...
                         ];                
-        end
+        end              
     end        
-
+%     end
 
 
 end

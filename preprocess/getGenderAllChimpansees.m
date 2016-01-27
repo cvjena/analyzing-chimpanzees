@@ -23,7 +23,7 @@ function b_genders = getGenderAllChimpansees ( s_filelist )
         progressbar(s_fileIdx/double(i_len));
         s_fn      = s_images{s_fileIdx};
                 
-        b_gendersTmp  = getBoolSingleChimpansee ( s_fn, 'Gender', 'Male' );
+        b_gendersTmp  = getBoolDataSingleImage ( s_fn, 'Gender', 'Male' );
         
         b_genders    = [b_genders; b_gendersTmp];
          
