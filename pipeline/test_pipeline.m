@@ -1,27 +1,41 @@
+%% set up required directories
+
+s_cacheDir = './pipeline/cache/';
+
+if ( ~(exist( s_cacheDir, 'dir' ) ) )
+    mkdir ( s_cacheDir );
+end
+
+%% specify the test image 
 %s_fn = '/home/dbv/datasets/schimpansen_leipzig/ChimpTai/Deschner_01001_00001.png';
-s_fn = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_25-06-10_T00_02_09.png';
+s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_25-06-10_T00_02_09.png';
 
 image = imread ( s_fn );
 
 %% settings for 1 - detect and localize faces
 str_detection = [];
 
-str_face_detector               = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
-str_settings_tmp                = [];
+str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
+str_settings_tmp                    = [];
 str_settings_tmp.s_fn               = s_fn;
 str_settings_tmp.b_show_detections  = false;
 %
-str_settings_tmp.str_face_detector = str_face_detector;
-str_settings_tmp.str_settings_detection      = str_settings_tmp;
+str_settings_tmp.str_settings_detection ...
+                                    = str_settings_tmp;
+%                                
+str_face_detection.str_face_detector  ...
+                                    = str_face_detector;
+str_face_detection.str_settings_face_detection ...
+                                    = str_settings_tmp;                                
 %
-str_settings.str_detection      = str_settings_tmp;
+str_settings.str_face_detection     = str_face_detection;
 
 
 
 %% settings for 2 - extract features of every face
 str_feature_extraction = [];
 
-str_feature_extractor   = struct('name', 'pre-computed CNN activations', 'mfunction', @feature_extractor_precomputed_CNN_activations );
+str_feature_extractor       = struct('name', 'pre-computed CNN activations', 'mfunction', @feature_extractor_precomputed_CNN_activations );
 %
 str_settings_tmp            = [];
 str_settings_tmp.s_fn       = s_fn;
@@ -107,4 +121,4 @@ str_settings.str_feature_extraction   = str_feature_extraction;
 %% general options
 str_settings.b_visualize_results = true;
 
-str_results = pipeline_all_about_apes ( image, str_settings );
+str_results = pipeline_all_about_apes ( image, str_settings )

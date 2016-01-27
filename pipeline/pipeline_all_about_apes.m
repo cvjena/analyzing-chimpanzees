@@ -11,11 +11,11 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     
 
     %% 1 - detect and localize faces
-    str_detection          = getFieldWithDefault ( str_settings, 'str_detection', []);
-    str_face_detector      = getFieldWithDefault ( str_detection, 'str_face_detector', struct('name', {}, 'mfunction', {} ) );
-    str_settings_detection = getFieldWithDefault ( str_detection, 'str_settings_detection', [] );
+    str_face_detection          = getFieldWithDefault ( str_settings, 'str_face_detection', []);
+    str_face_detector           = getFieldWithDefault ( str_face_detection, 'str_face_detector', struct('name', {}, 'mfunction', {} ) );
+    str_settings_face_detection = getFieldWithDefault ( str_face_detection, 'str_settings_face_detection', [] );
     
-    str_detected_faces     = str_face_detector.mfunction ( img, str_settings_detection );
+    str_detected_faces          = str_face_detector.mfunction ( img, str_settings_face_detection );
     
     if ( b_visualize_results )
         show_boxes ( hAxes, str_detected_faces.i_face_regions');
@@ -29,46 +29,102 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_extracted_features          = str_feature_extractor.mfunction ( img, str_detected_faces, str_settings_feature_extraction );
     
     %% 3.1 - decide for known/unknown of each face hypothesis (open-set)
-    str_settings_novelty = getFieldWithDefault ( str_settings, 'str_settings_novelty', []);
+    str_novelty_detection  = getFieldWithDefault ( str_settings, 'str_novelty_detection', []);
+    str_novelty_detector   = getFieldWithDefault ( str_novelty_detection, 'str_novelty_detector', struct('name', {}, 'mfunction', {} ) );
+    str_settings_novelty_detection ...
+                           = getFieldWithDefault ( str_novelty_detection, 'str_settings_novelty_detection', [] );
+
+
+    b_do_novelty_detection = getFieldWithDefault ( str_novelty_detection, 'b_do_novelty_detection', false );                       
     
-    b_do_novelty_detection = getFieldWithDefault ( str_settings_novelty, 'b_do_novelty_detection', true );
-    str_novelty_detector = getFieldWithDefault ( str_settings_novelty, 'str_novelty_detector', struct('name', {}, 'mfunction', {}, 'settings', {} ) );
-    
-    if ( b_visualize_results )
-        %print novelty result to image
-    end    
+    if ( b_do_novelty_detection )
+        str_results_novelty_detection ...
+                           = str_novelty_detector.mfunction ( str_extracted_features, str_settings_novelty_detection );
+                       
+        if ( b_visualize_results )
+            %print novelty result to image
+            str_results_novelty_detection
+        end
+    end
+                       
+   
     
     %% 3.2 - classify each face hypothesis (closed-sed)
-    str_settings_identification = getFieldWithDefault ( settings, 'str_settings_identification', []);
+    str_identification          = getFieldWithDefault ( str_settings, 'str_identification', []);
+    str_identifier              = getFieldWithDefault ( str_identification, 'str_identifier', struct('name', {}, 'mfunction', {} ) );
+    str_settings_identification = getFieldWithDefault ( str_identification, 'str_settings_identification', [] );    
     
-    b_do_identification = getFieldWithDefault ( str_settings_identification, 'b_do_identification', true );
     
-    if ( b_visualize_results )
-        %print id to image
+    b_do_identification = getFieldWithDefault ( str_settings_identification, 'b_do_identification', false );
+    
+    if ( b_do_identification )
+        str_results_identification ...
+                           = str_identifier.mfunction ( str_extracted_features, str_settings_identification );
+                       
+        if ( b_visualize_results )
+            %print identification result to image
+            str_results_identification
+        end    
     end
+                       
+   
     
     %% 4 estimate age of each face hypothesis
-    str_settings_age_estimation = getFieldWithDefault ( str_settings, 'str_settings_age_estimation', []);
+    str_age_estimation          = getFieldWithDefault ( str_settings, 'str_age_estimation', []);
+    str_age_estimator           = getFieldWithDefault ( str_age_estimation, 'str_age_estimator', struct('name', {}, 'mfunction', {} ) );
+    str_settings_age_estimation = getFieldWithDefault ( str_age_estimation, 'str_settings_age_estimation', [] );        
     
-    b_do_age_estimation = getFieldWithDefault ( str_settings_age_estimation, 'b_do_age_estimation', true );
-    
-    if ( b_visualize_results )
-        %print age to image
+    b_do_age_estimation         = getFieldWithDefault ( str_age_estimation, 'b_do_age_estimation', false );
+     
+    if ( b_do_age_estimation )
+        str_results_age_estimation ...
+                           = str_age_estimator.mfunction ( str_extracted_features, str_settings_age_estimation );
+                       
+        if ( b_visualize_results )
+            %print age to image
+            str_results_age_estimation
+        end                           
     end
+                       
+ 
     
     %% 5 estimate age group of each face hypothesis
-    str_settings_gender_estimation = getFieldWithDefault ( str_settings, 'str_settings_gender_estimation', []);
+    str_age_group_estimation          = getFieldWithDefault ( str_settings, 'str_age_group_estimation', []);
+    str_age_group_estimator           = getFieldWithDefault ( str_age_group_estimation, 'str_age_group_estimator', struct('name', {}, 'mfunction', {} ) );
+    str_settings_age_group_estimation = getFieldWithDefault ( str_age_group_estimation, 'str_settings_age_group_estimation', [] );        
     
-    b_do_gender_estimation = getFieldWithDefault ( str_settings_gender_estimation, 'b_do_gender_estimation', true );
-    
-    if ( b_visualize_results )
-        %print age group to image
-    end     
+    b_do_age_group_estimation         = getFieldWithDefault ( str_age_group_estimation, 'b_do_age_group_estimation', false );
+     
+    if ( b_do_age_group_estimation )
+        str_results_age_group_estimation ...
+                           = str_age_group_estimator.mfunction ( str_extracted_features, str_settings_age_group_estimation );
+                       
+        if ( b_visualize_results )
+            %print age group to image
+            str_results_age_group_estimation
+        end                           
+    end
     
     %% 6 estimate gender of each face hypothesis
+    str_gender_estimation          = getFieldWithDefault ( str_settings, 'str_gender_estimation', []);
+    str_gender_estimator           = getFieldWithDefault ( str_age_group_estimation, 'str_gender_estimator', struct('name', {}, 'mfunction', {} ) );
+    str_settings_gender_estimation = getFieldWithDefault ( str_age_group_estimation, 'str_settings_gender_estimation', [] );        
+    
+    b_do_gender_estimation         = getFieldWithDefault ( str_age_group_estimation, 'b_do_gender_estimation', false );
+     
+    if ( b_do_gender_estimation )
+        str_results_gender_estimation ...
+                                   = str_age_group_estimator.mfunction ( str_extracted_features, str_settings_gender_estimation );
+                       
+        if ( b_visualize_results )
+            %print age group to image
+            str_results_gender_estimation
+        end 
+    end
+    
     str_settings_gender_estimation = getFieldWithDefault ( str_settings, 'str_settings_gender_estimation', []);
     
-    b_do_gender_estimation = getFieldWithDefault ( str_settings_gender_estimation, 'b_do_gender_estimation', true );
+    b_do_gender_estimation = getFieldWithDefault ( str_settings_gender_estimation, 'b_do_gender_estimation', false );
     
     if ( b_visualize_results )
         %print gender to image
@@ -79,6 +135,31 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     if ( b_visualize_results )
         pause
         close ( hFig );
-    end          
+    end 
+    
+    %% assign outputs
+    str_results = [];
+    %
+    str_results.str_detected_faces                   = str_detected_faces;
+    %
+    if ( b_do_novelty_detection )
+        str_results.str_results_novelty_detection    = str_results_novelty_detection;
+    end     
+    %
+    if ( b_do_identification )
+        str_results.str_results_identification       = str_results_identification;
+    end      
+    %
+    if ( b_do_age_estimation )
+        str_results.str_results_age_estimation       = str_results_age_estimation;
+    end    
+    %
+    if ( b_do_age_group_estimation )
+        str_results.str_results_age_group_estimation = str_results_age_group_estimation;
+    end
+    %
+    if ( b_do_gender_estimation )
+        str_results.str_results_gender_estimation    = str_results_gender_estimation;
+    end
     
 end
