@@ -5,7 +5,7 @@ function str_out = age_group_classifier_ground_truth ( str_extracted_features, s
 %  INPUT:
 % 
 %  OUTPUT:
-%     str_out.s_names = estimated names of the detected chimpansees in the image
+%     str_out.s_names = estimated age group (array of char array) of the detected chimpansees in the image
 
     s_fn          = str_settings.s_fn;
     s_age_groups  = getStringDataSingleImage ( s_fn, 'AgeGroup' );
