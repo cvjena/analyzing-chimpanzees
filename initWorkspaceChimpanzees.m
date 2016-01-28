@@ -88,7 +88,15 @@ function initWorkspaceChimpanzees
     b_overwrite             = true;
     s_pathIdent             = fullfile(pwd, 'identification');
     addPathSafely ( s_pathIdent, b_recursive, b_overwrite )
-    clear ( 's_pathIdent' );       
+    clear ( 's_pathIdent' );      
+    
+    %%    
+    % everything for gender classification of chimpansees
+    b_recursive             = true; 
+    b_overwrite             = true;
+    s_pathGender            = fullfile(pwd, 'gender_classification');
+    addPathSafely ( s_pathGender, b_recursive, b_overwrite )
+    clear ( 's_pathGender' );  
     
     %%    
     % everything for age estimation of chimpansees

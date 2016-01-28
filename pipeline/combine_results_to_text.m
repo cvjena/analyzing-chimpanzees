@@ -21,9 +21,11 @@ function s_est_attributes_combined =  combine_results_to_text ( str_results )
         end        
         
         if ( isfield(str_results, 'str_results_age_group_estimation' ) )
+             s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_age_group_estimation.s_age_groups{idxObj}];            
         end  
         
         if ( isfield(str_results, 'str_results_gender_estimation' ) )
+             s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_gender_estimation.s_genders{idxObj}];            
         end          
     
         
