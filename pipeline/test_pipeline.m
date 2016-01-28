@@ -6,18 +6,12 @@ if ( ~(exist( s_cacheDir, 'dir' ) ) )
     mkdir ( s_cacheDir );
 end
 
-%% specify the test image 
-%s_fn = '/home/dbv/datasets/schimpansen_leipzig/ChimpTai/Deschner_01001_00001.png';
-s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_25-06-10_T00_02_09.png';
-
-image = imread ( s_fn );
-
 %% settings for 1 - detect and localize faces
 str_detection = [];
 
 str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
 str_settings_tmp                    = [];
-str_settings_tmp.s_fn               = s_fn;
+str_settings_tmp.s_fn               = '';%s_fn;
 str_settings_tmp.b_show_detections  = false;
 %
 str_settings_tmp.str_settings_detection ...
@@ -38,7 +32,7 @@ str_feature_extraction = [];
 str_feature_extractor       = struct('name', 'pre-computed CNN activations', 'mfunction', @feature_extractor_precomputed_CNN_activations );
 %
 str_settings_tmp            = [];
-str_settings_tmp.s_fn       = s_fn;
+str_settings_tmp.s_fn       = '';
 str_settings_tmp.s_destFeat = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/features/ChimpZoo/AlexNet/featpool5.mat';
 %
 s_destData = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/preprocess/data_ChimpZoo/';
@@ -170,4 +164,42 @@ str_settings.str_age_estimation   = str_age_estimation;
 %% general options
 str_settings.b_visualize_results = true;
 
-str_results = pipeline_all_about_apes ( image, str_settings )
+
+%% specify the test image 
+% %option 1
+% %first face is in training set - this is the corresponding image
+% s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_25-06-10_T00_02_09.png';
+%
+% %option 2
+% %the fourth face is not in training set - this is the corresponding image
+% s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_30-06-10_1_T00_00_00_Jahaga.png';
+%
+% %option 3
+% loop over all images
+
+
+s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
+% fileId value - open the file
+fid = fopen( s_destDatasetUncropped );
+% reads data from open test file into cell array (%s -> read string)
+s_images = textscan(fid, '%s', 'Delimiter','\n');
+% get all images
+s_images = s_images{1};
+%
+fclose ( fid );
+
+
+str_results_all = {};
+for i_imgIdx=1:length( s_images )
+    s_fn        = s_images { i_imgIdx };
+    image       = imread ( s_fn ); 
+    
+    % adapt nasty image-fn-specific gt-settings
+    str_settings.str_face_detection.str_settings_face_detection.s_fn         = s_fn;
+    str_settings.str_feature_extraction.str_settings_feature_extraction.s_fn = s_fn;    
+    
+    
+    % go go go ...
+    str_results = pipeline_all_about_apes ( image, str_settings );
+    str_results_all{i_imgIdx} = str_results_all;
+end
