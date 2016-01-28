@@ -79,8 +79,7 @@ function dataset_chimpansees = load_chimpansees ( s_destData, settings )
     end
         
     if ( b_load_gender )    
-        b_idxGenderValid            = ~isnan ( genderInfo.b_genders );
-        b_validityChecks{end+1}     = b_idxGenderValid;
+        b_validityChecks{end+1}     = genderInfo.b_is_gender_reliable;
     end
     
     if ( b_load_age_group )
@@ -109,7 +108,9 @@ function dataset_chimpansees = load_chimpansees ( s_destData, settings )
     end    
 
     if ( b_load_gender )
-        dataset_chimpansees.b_genders        = genderInfo.b_genders;        
+        dataset_chimpansees.f_genders        = genderInfo.f_genders;  
+        dataset_chimpansees.s_all_genders    = genderInfo.s_all_genders;  
+        
     end    
     
     if ( b_load_age_group )

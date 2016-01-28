@@ -10,9 +10,6 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     
     str_detected_faces          = str_face_detector.mfunction ( img, str_settings_face_detection );
     
-%     if ( b_visualize_results )
-%         show_boxes ( hAxes, str_detected_faces.i_face_regions');
-%     end
     
     %% 2 - extract features of every face
     str_feature_extraction          = getFieldWithDefault ( str_settings, 'str_feature_extraction', []);
@@ -33,11 +30,6 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     if ( b_do_novelty_detection )
         str_results_novelty_detection ...
                            = str_novelty_detector.mfunction ( str_extracted_features, str_settings_novelty_detection );
-                       
-%         if ( b_visualize_results )
-%             %print novelty result to image
-%             str_results_novelty_detection
-%         end
     end
                        
    
@@ -53,15 +45,6 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     if ( b_do_identification )
         str_results_identification ...
                            = str_identifier.mfunction ( str_extracted_features, str_settings_identification );
-                       
-%         if ( b_visualize_results )
-%             %print identification result to image
-%             %str_results_identification
-%             writeTextToImage ( hAxes, str_results_identification.s_names, ...
-%                                [str_detected_faces.i_face_regions(:,1) + str_detected_faces.i_face_regions(:,3) ...
-%                                 str_detected_faces.i_face_regions(:,1)] ...
-%                                 );
-%         end    
     end
                        
    
@@ -75,12 +58,7 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
      
     if ( b_do_age_estimation )
         str_results_age_estimation ...
-                           = str_age_estimator.mfunction ( str_extracted_features, str_settings_age_estimation );
-                       
-%         if ( b_visualize_results )
-%             %print age to image
-%             str_results_age_estimation
-%         end                           
+                           = str_age_estimator.mfunction ( str_extracted_features, str_settings_age_estimation );                        
     end
                        
  
@@ -90,42 +68,26 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_age_group_estimator           = getFieldWithDefault ( str_age_group_estimation, 'str_age_group_estimator', struct('name', {}, 'mfunction', {} ) );
     str_settings_age_group_estimation = getFieldWithDefault ( str_age_group_estimation, 'str_settings_age_group_estimation', [] );        
     
-    b_do_age_group_estimation         = getFieldWithDefault ( str_age_group_estimation, 'b_do_age_group_estimation', false );
+    b_do_age_group_estimation         = getFieldWithDefault ( str_settings_age_group_estimation, 'b_do_age_group_estimation', false );
      
     if ( b_do_age_group_estimation )
         str_results_age_group_estimation ...
-                           = str_age_group_estimator.mfunction ( str_extracted_features, str_settings_age_group_estimation );
-                       
-%         if ( b_visualize_results )
-%             %print age group to image
-%             str_results_age_group_estimation
-%         end                           
+                           = str_age_group_estimator.mfunction ( str_extracted_features, str_settings_age_group_estimation );                         
     end
     
     %% 6 estimate gender of each face hypothesis
     str_gender_estimation          = getFieldWithDefault ( str_settings, 'str_gender_estimation', []);
-    str_gender_estimator           = getFieldWithDefault ( str_age_group_estimation, 'str_gender_estimator', struct('name', {}, 'mfunction', {} ) );
-    str_settings_gender_estimation = getFieldWithDefault ( str_age_group_estimation, 'str_settings_gender_estimation', [] );        
+    str_gender_estimator           = getFieldWithDefault ( str_gender_estimation, 'str_gender_estimator', struct('name', {}, 'mfunction', {} ) );
+    str_settings_gender_estimation = getFieldWithDefault ( str_gender_estimation, 'str_settings_gender_estimation', [] );        
     
-    b_do_gender_estimation         = getFieldWithDefault ( str_age_group_estimation, 'b_do_gender_estimation', false );
+    b_do_gender_estimation         = getFieldWithDefault ( str_settings_gender_estimation, 'b_do_gender_estimation', false );
      
     if ( b_do_gender_estimation )
         str_results_gender_estimation ...
-                                   = str_age_group_estimator.mfunction ( str_extracted_features, str_settings_gender_estimation );
-                       
-%         if ( b_visualize_results )
-%             %print age group to image
-%             str_results_gender_estimation
-%         end 
+                                   = str_gender_estimator.mfunction ( str_extracted_features, str_settings_gender_estimation );
     end
     
     str_settings_gender_estimation = getFieldWithDefault ( str_settings, 'str_settings_gender_estimation', []);
-    
-    b_do_gender_estimation = getFieldWithDefault ( str_settings_gender_estimation, 'b_do_gender_estimation', false );
-    
-%     if ( b_visualize_results )
-%         %print gender to image
-%     end    
     
    
     %% assign outputs
@@ -164,7 +126,11 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
         
         % show results
         hFig = figure;
+        % deactivate the annoying warning that the image is too big to fit
+        % the screen and will be resized...
+        warning('off', 'Images:initSize:adjustingMag');
         imshow ( img );
+        
         xsize = size(img,2);
         ysize = size(img,1);
         hAxes = gca;
@@ -189,7 +155,8 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     
     
         % clean up
-        pause
+        f_timeToWait = 2.0;
+        pause( f_timeToWait )
         close ( hFig );
     end     
     

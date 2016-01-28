@@ -128,37 +128,52 @@ str_age_estimation.str_settings_age_estimation ...
 %
 str_settings.str_age_estimation   = str_age_estimation;
 
-% 
-% %% settings for 5 estimate gender of each face hypothesis
-% str_settings.str_settings_gender_estimation = [];
-% str_settings_gender_estimation.b_do_gender_estimation = true;
-% 
-%      = getFieldWithDefault ( settings, 'str_settings_detection', []);
-%     str_face_detector = getFieldWithDefault ( str_settings_novelty, 'str_face_detector', struct('name', {}, 'mfunction', {}, 'settings', {} ) );
-%     
-% 
-%     str_settings_feature_extraction = getFieldWithDefault ( settings, 'str_settings_feature_extraction', []);
-%     
-%     %% 
-%     str_settings_novelty = getFieldWithDefault ( settings, 'str_settings_novelty', []);
-%     
-%     b_do_novelty_detection = getFieldWithDefault ( str_settings_novelty, 'b_do_novelty_detection', true );
-%     str_novelty_detector = getFieldWithDefault ( str_settings_novelty, 'str_novelty_detector', struct('name', {}, 'mfunction', {}, 'settings', {} ) );
-%     
-%     %% 
-%     str_settings_identification = getFieldWithDefault ( settings, 'str_settings_identification', []);
-%     
-%     b_do_identification = getFieldWithDefault ( str_settings_identification, 'b_do_identification', true );
-%     
-%     %% 
-%     str_settings_age_estimation = getFieldWithDefault ( settings, 'str_settings_age_estimation', []);
-%     
-%     b_do_age_estimation = getFieldWithDefault ( str_settings_age_estimation, 'b_do_age_estimation', true );
-%     
-%     %% 
-%     str_settings_gender_estimation = getFieldWithDefault ( settings, 'str_settings_gender_estimation', []);
-%     
-%     b_do_gender_estimation = getFieldWithDefault ( str_settings_gender_estimation, 'b_do_gender_estimation', true );
+%% settings for 5 estimate age group of each face hypothesis
+str_age_group_estimator = [];
+str_settings_tmp        = [];
+
+str_settings_tmp.b_do_age_group_estimation = true;
+
+
+
+str_age_group_estimator = struct('name', 'Linear SVM', 'mfunction', @age_group_classifier_linear_SVM );
+
+
+load ( './pipeline/cache/model_age_group_classification_ChimpZoo.mat' , 'svmmodel', 'settingsLibLinear', 's_possible_age_groups' );
+str_settings_tmp.svmmodel               = svmmodel;
+str_settings_tmp.settingsLibLinear      = settingsLibLinear;
+str_settings_tmp.s_possible_age_groups  = s_possible_age_groups;
+
+
+%
+str_age_group_estimation.str_age_group_estimator  ...
+                                  = str_age_group_estimator;
+str_age_group_estimation.str_settings_age_group_estimation ...
+                                  = str_settings_tmp;
+%
+str_settings.str_age_group_estimation   = str_age_group_estimation;
+
+
+%% settings for 6 estimate gender of each face hypothesis
+str_gender_estimator = [];
+str_settings_tmp     = [];
+
+str_settings_tmp.b_do_gender_estimation = true;
+
+str_gender_estimator = struct('name', 'Linear SVM', 'mfunction', @gender_classifier_linear_SVM );
+
+load ( './pipeline/cache/model_gender_classification_ChimpZoo.mat' , 'svmmodel', 'settingsLibLinear', 's_possible_genders' );
+str_settings_tmp.svmmodel               = svmmodel;
+str_settings_tmp.settingsLibLinear      = settingsLibLinear;
+str_settings_tmp.s_all_genders          =  s_all_genders;
+
+%
+str_gender_estimation.str_gender_estimator  ...
+                                   = str_gender_estimator;
+str_gender_estimation.str_settings_gender_estimation ...
+                                   = str_settings_tmp;
+%
+str_settings.str_gender_estimation = str_gender_estimation;
 
 
 %% general options

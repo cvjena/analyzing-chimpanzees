@@ -1,4 +1,4 @@
-function b_genders = getGenderAllChimpansees ( s_filelist )
+function s_genders = getGenderAllChimpansees ( s_filelist )
 
 
    % fileId value - open the file
@@ -13,7 +13,7 @@ function b_genders = getGenderAllChimpansees ( s_filelist )
     fclose ( fid );
     
    
-    b_genders = [];
+    s_genders = [];
     
     %%
     
@@ -23,9 +23,9 @@ function b_genders = getGenderAllChimpansees ( s_filelist )
         progressbar(s_fileIdx/double(i_len));
         s_fn      = s_images{s_fileIdx};
                 
-        b_gendersTmp  = getBoolDataSingleImage ( s_fn, 'Gender', 'Male' );
+        s_gendersTmp  = getStringDataSingleImage ( s_fn, 'Gender' );
         
-        b_genders    = [b_genders; b_gendersTmp];
+        s_genders    = [s_genders; s_gendersTmp];
          
     end
     progressbar(1);
