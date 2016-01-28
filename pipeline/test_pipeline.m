@@ -84,7 +84,13 @@ str_settings_tmp   = [];
 
 str_settings_tmp.b_do_identification = true;
 
-str_identifier                    = struct('name', 'Linear SVM', 'mfunction', @face_identifier_linear_SVM );
+str_identifier                     = struct('name', 'Linear SVM', 'mfunction', @face_identifier_linear_SVM );
+
+
+load ( './pipeline/cache/model_identification_ChimpZoo.mat' , 'svmmodel', 'settingsLibLinear', 's_all_identities' );
+str_settings_tmp.svmmodel          = svmmodel;
+str_settings_tmp.settingsLibLinear = settingsLibLinear;
+str_settings_tmp.s_all_identities  = s_all_identities;
 
 %
 str_identification.str_identifier  ...
@@ -94,10 +100,40 @@ str_identification.str_settings_identification ...
 %
 str_settings.str_identification   = str_identification;
 
-% 
-% %% settings for 4 estimate age of each face hypothesis
-% str_settings.str_settings_age_estimation = [];
-% str_settings_age_estimation.b_do_age_estimation = true;
+
+%% settings for 4 estimate age of each face hypothesis
+str_age_estimation = [];
+str_settings_tmp   = [];
+
+str_settings_tmp.b_do_age_estimation = true;
+
+str_age_estimator = struct('name', 'GP regression', 'mfunction', @age_regressor_GP );
+res = load ( './pipeline/cache/model_age_estimation_ChimpZoo.mat', 'model', 'settingsGP', 'idxTrain', 's_destFeat' );
+
+featCNN = load ( res.s_destFeat );
+if ( isfield ( featCNN, 'struct_feat' ) ) % compatibility with MatConvNet
+    featCNN = cell2mat(featCNN.struct_feat);
+elseif ( isfield ( featCNN, 'feat' ) && isfield ( featCNN.feat, 'name' ) )   % compatibility with Caffe
+    featCNN = featCNN.feat.(featCNN.feat.name);
+else
+    error ( 'CNN features not readable!' )
+end
+featTrain = featCNN( :, res.idxTrain );
+
+str_settings_tmp.gpmodel    = res.model;
+str_settings_tmp.settingsGP = res.settingsGP;
+str_settings_tmp.dataTrain  = featTrain;
+clear 'featCNN';
+clear 'res';
+
+%
+str_age_estimation.str_age_estimator  ...
+                                  = str_age_estimator;
+str_age_estimation.str_settings_age_estimation ...
+                                  = str_settings_tmp;
+%
+str_settings.str_age_estimation   = str_age_estimation;
+
 % 
 % %% settings for 5 estimate gender of each face hypothesis
 % str_settings.str_settings_gender_estimation = [];

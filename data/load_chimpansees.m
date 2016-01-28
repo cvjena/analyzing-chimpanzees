@@ -120,7 +120,8 @@ function dataset_chimpansees = load_chimpansees ( s_destData, settings )
     end
     
     if ( b_load_identity )
-        dataset_chimpansees.f_labels         = identity_information.f_labels;           
+        dataset_chimpansees.f_labels         = identity_information.f_labels;        
+        dataset_chimpansees.s_all_identities = identity_information.s_all_identities;        
     end
     
     if ( b_load_dataset_name )

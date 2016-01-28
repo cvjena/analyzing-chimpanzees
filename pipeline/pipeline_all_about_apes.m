@@ -74,7 +74,7 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_age_estimator           = getFieldWithDefault ( str_age_estimation, 'str_age_estimator', struct('name', {}, 'mfunction', {} ) );
     str_settings_age_estimation = getFieldWithDefault ( str_age_estimation, 'str_settings_age_estimation', [] );        
     
-    b_do_age_estimation         = getFieldWithDefault ( str_age_estimation, 'b_do_age_estimation', false );
+    b_do_age_estimation         = getFieldWithDefault ( str_settings_age_estimation, 'b_do_age_estimation', false );
      
     if ( b_do_age_estimation )
         str_results_age_estimation ...
