@@ -18,7 +18,8 @@ function str_out = face_identifier_linear_SVM ( str_extracted_features, str_sett
     assert ( ~isempty ( settingsLibLinear ), 'No LibSVM settings for identification provided!' );
         
 
-   [predicted_labels, ~, ~] = liblinear_test ( zeros(1,size(str_extracted_features.features,2)), sparse(double(str_extracted_features.features')), svmmodel, settingsLibLinear );
+
+    [predicted_labels, ~, ~] = liblinear_test ( zeros(size(str_extracted_features.features,2),1), sparse(double(str_extracted_features.features')), svmmodel, settingsLibLinear );
    
     %FIXME change towards returning actual names instead of numbers!
     %predicted_ids   = arrayfun ( @num2str, predicted_labels );
