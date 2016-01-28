@@ -99,12 +99,36 @@ function initWorkspaceChimpanzees
     clear ( 's_pathAgeReg' );  
     
     %%    
-    % everything for age group estimation (infant vs non-infant)
+    % everything for age group estimation
     b_recursive             = true; 
     b_overwrite             = true;
     s_pathAgeGroupEst       = fullfile(pwd, 'age_group_classification');
     addPathSafely ( s_pathAgeGroupEst, b_recursive, b_overwrite )
     clear ( 's_pathAgeGroupEst' );      
+    
+    %%    
+    % everything for face detection
+    b_recursive             = true; 
+    b_overwrite             = true;
+    s_pathFaceDetect        = fullfile(pwd, 'face_detection');
+    addPathSafely ( s_pathFaceDetect, b_recursive, b_overwrite )
+    clear ( 's_pathFaceDetect' );  
+    
+    %%    
+    % everything for feature extraction
+    b_recursive             = true; 
+    b_overwrite             = true;
+    s_pathFeatExtract       = fullfile(pwd, 'feature_extraction');
+    addPathSafely ( s_pathFeatExtract, b_recursive, b_overwrite )
+    clear ( 's_pathFeatExtract' );    
+    
+    %%    
+    % everything for the entire pipeline
+    b_recursive             = true; 
+    b_overwrite             = true;
+    s_pathPipeline          = fullfile(pwd, 'pipeline');
+    addPathSafely ( s_pathPipeline, b_recursive, b_overwrite )
+    clear ( 's_pathPipeline' );      
 
         
     
