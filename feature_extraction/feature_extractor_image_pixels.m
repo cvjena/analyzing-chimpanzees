@@ -37,22 +37,22 @@ function str_out = feature_extractor_image_pixels ( image, str_boxes, str_settin
     
     %% crop subimages, convert, and store
     for idx=size ( str_boxes.i_face_regions, 1):-1:1
-	subimg = imcrop ( image, [   str_boxes.i_face_regions(idx,1) ...
-	                             str_boxes.i_face_regions(idx,2) ...
-	                             str_boxes.i_face_regions(idx,3) ...
-	                             str_boxes.i_face_regions(idx,4) ...
-	                         ] );
-	                         
-	if ( b_scale_detections )
-	    % to support gray value and color images
-	    i_size = size ( subimg );
-	    i_size ( 1 ) = i_detection_height;
-	    i_size ( 2 ) = i_detection_width;
-	    %FIXME - use valid scaling method!
-	    subimg = scale ( subimage, i_size );
-	end
-	
-	features{idx} = subimg;
+        subimg = imcrop ( image, [   str_boxes.i_face_regions(idx,1) ...
+                                     str_boxes.i_face_regions(idx,2) ...
+                                     str_boxes.i_face_regions(idx,3) ...
+                                     str_boxes.i_face_regions(idx,4) ...
+                                 ] );
+
+        if ( b_scale_detections )
+            % to support gray value and color images
+            i_size = size ( subimg );
+            i_size ( 1 ) = i_detection_height;
+            i_size ( 2 ) = i_detection_width;
+            %FIXME - use valid scaling method!
+            subimg = scale ( subimage, i_size );
+        end
+
+        features{idx} = subimg;
     end
     
     %% assign outputs

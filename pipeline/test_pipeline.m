@@ -11,7 +11,7 @@ str_detection = [];
 
 str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
 str_settings_tmp                    = [];
-str_settings_tmp.s_fn               = '';%s_fn;
+str_settings_tmp.s_fn               = '';
 str_settings_tmp.b_show_detections  = false;
 %
 str_settings_tmp.str_settings_detection ...
@@ -28,33 +28,78 @@ str_settings.str_face_detection     = str_face_detection;
 
 %% settings for 2 - extract features of every face
 str_feature_extraction = [];
+str_settings_tmp       = [];
+b_load_CNN_activations = false;
 
-str_feature_extractor       = struct('name', 'pre-computed CNN activations', 'mfunction', @feature_extractor_precomputed_CNN_activations );
-%
-str_settings_tmp            = [];
-str_settings_tmp.s_fn       = '';
-str_settings_tmp.s_destFeat = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/features/ChimpZoo/AlexNet/featpool5.mat';
-%
-s_destData = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/preprocess/data_ChimpZoo/';
-settingsLoad.b_load_age               = false;
-settingsLoad.b_load_gender            = false;
-settingsLoad.b_load_age_group         = false;
-settingsLoad.b_load_identity          = false;
-settingsLoad.b_load_dataset_name      = false;
-dataset_chimpansees                   = load_chimpansees( s_destData, settingsLoad );
-str_settings_tmp.dataset              = dataset_chimpansees;
-%
-s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
-% fileId value - open the file
-fid = fopen( s_destDatasetUncropped );
-% reads data from open test file into cell array (%s -> read string)
-s_images = textscan(fid, '%s', 'Delimiter','\n');
-% get all images
-s_images = s_images{1};
-%
-fclose ( fid );
-%
-str_settings_tmp.s_imagesUncropped    = s_images;
+if ( ~b_load_CNN_activations )
+    %addPathSafely ( '/home/freytag/lib/caffe_pp_pollux/matlab/caffe/', true, true)
+    addPathSafely ( '/home/freytag/code/caffe/matlab/caffe/', true, true)
+    str_feature_extractor       = struct('name', 'pre-computed CNN activations', 'mfunction', @feature_extractor_CNN_activations );
+    
+    % setup caffe framework
+    b_useGPU = false;
+    i_idxGPU = 1;
+    if ( b_useGPU )
+        caffe.set_mode_gpu();
+        caffe.set_device( i_idxGPU );
+    else
+        caffe.set_mode_cpu();
+    end
+    
+    % specify the network
+    s_pathtodeployfile       = '/home/freytag/code/3rdParty/caffeemodels/alexnet/deploy.prototxt';
+    s_pathtomodel            = '/home/freytag/code/3rdParty/caffeemodels/alexnet/bvlc_reference_caffenet.caffemodel'; %CNN precomputed from ImageNet
+    s_phase                  = 'test'; % run with phase test (so that dropout isn't applied)    
+    %
+    %specify the mean file
+    s_meanfile               = '/home/freytag/lib/caffe_pollux/data/ilsvrc12/imagenet_mean.binaryproto';    
+    %    
+    % do we want to operate on single images or batches?
+    b_reshape_for_single_image_processing = true;
+    
+    [net, mean_data]         = caffe_load_network ( s_pathtodeployfile, s_pathtomodel, s_phase, s_meanfile, b_reshape_for_single_image_processing);
+    
+    str_settings_tmp.net     = net;
+    str_settings_tmp.f_mean  = mean_data;
+    
+    % old call for old caffe version... : matcaffe_init(1,s_pathtodeployfile,s_pathtomodel,1);
+    %
+    % which layer to extract activations from?
+    str_settings_tmp.s_layer = 'pool5';
+    % old caffe layout:
+    %s_meanfile               = '/home/freytag/lib/caffe_pp_pollux/matlab/caffe/ilsvrc_2012_mean.mat';
+    %d                        = load(s_meanfile);
+    %f_mean                   = d.image_mean;
+    %        
+    %
+else
+    %
+    str_feature_extractor       = struct('name', 'pre-computed CNN activations', 'mfunction', @feature_extractor_precomputed_CNN_activations );
+    %
+    str_settings_tmp.s_fn       = '';
+    str_settings_tmp.s_destFeat = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/features/ChimpZoo/AlexNet/featpool5.mat';
+
+    s_destData = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/preprocess/data_ChimpZoo/';
+    settingsLoad.b_load_age               = false;
+    settingsLoad.b_load_gender            = false;
+    settingsLoad.b_load_age_group         = false;
+    settingsLoad.b_load_identity          = false;
+    settingsLoad.b_load_dataset_name      = false;
+    dataset_chimpansees                   = load_chimpansees( s_destData, settingsLoad );
+    str_settings_tmp.dataset              = dataset_chimpansees;
+    %
+    s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
+    % fileId value - open the file
+    fid = fopen( s_destDatasetUncropped );
+    % reads data from open test file into cell array (%s -> read string)
+    s_images = textscan(fid, '%s', 'Delimiter','\n');
+    % get all images
+    s_images = s_images{1};
+    %
+    fclose ( fid );
+    %
+    str_settings_tmp.s_imagesUncropped    = s_images;
+end
 
 
 %
@@ -162,7 +207,7 @@ str_settings_tmp.b_do_gender_estimation = true;
 
 str_gender_estimator = struct('name', 'Linear SVM', 'mfunction', @gender_classifier_linear_SVM );
 
-load ( './pipeline/cache/model_gender_classification_ChimpZoo.mat' , 'svmmodel', 'settingsLibLinear', 's_possible_genders' );
+load ( './pipeline/cache/model_gender_classification_ChimpZoo.mat' , 'svmmodel', 'settingsLibLinear', 's_all_genders' );
 str_settings_tmp.svmmodel               = svmmodel;
 str_settings_tmp.settingsLibLinear      = settingsLibLinear;
 str_settings_tmp.s_all_genders          =  s_all_genders;
