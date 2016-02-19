@@ -79,7 +79,7 @@ function dataset_chimpansees = load_chimpansees ( s_destData, settings )
     end
         
     if ( b_load_gender )    
-        b_validityChecks{end+1}     = genderInfo.b_is_gender_reliable;
+        b_validityChecks{end+1}     = true(size(genderInfo.b_is_gender_reliable));
     end
     
     if ( b_load_age_group )
