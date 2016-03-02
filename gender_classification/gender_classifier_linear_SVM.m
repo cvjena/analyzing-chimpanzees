@@ -19,9 +19,9 @@ function str_out = gender_classifier_linear_SVM ( str_extracted_features, str_se
         
 
 
-    [predicted_age_group_ids, ~, ~] = liblinear_test ( zeros(size(str_extracted_features.features,2),1), sparse(double(str_extracted_features.features')), svmmodel, settingsLibLinear );
+    [predicted_gender_ids, ~, ~] = liblinear_test ( zeros(size(str_extracted_features.features,2),1), sparse(double(str_extracted_features.features')), svmmodel, settingsLibLinear );
    
-    predicted_genders = s_all_genders( predicted_age_group_ids );
+    predicted_genders = s_all_genders( predicted_gender_ids );
 
     %% assign outputs
     str_out              = [];
