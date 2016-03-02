@@ -40,11 +40,11 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_settings_identification = getFieldWithDefault ( str_identification, 'str_settings_identification', [] );    
     
     
-    b_do_identification = getFieldWithDefault ( str_settings_identification, 'b_do_identification', false );
+    b_do_identification         = getFieldWithDefault ( str_identification, 'b_do_identification', false );
     
     if ( b_do_identification )
         str_results_identification ...
-                           = str_identifier.mfunction ( str_extracted_features, str_settings_identification );
+                                = str_identifier.mfunction ( str_extracted_features, str_settings_identification );
     end
                        
    
@@ -54,7 +54,7 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_age_estimator           = getFieldWithDefault ( str_age_estimation, 'str_age_estimator', struct('name', {}, 'mfunction', {} ) );
     str_settings_age_estimation = getFieldWithDefault ( str_age_estimation, 'str_settings_age_estimation', [] );        
     
-    b_do_age_estimation         = getFieldWithDefault ( str_settings_age_estimation, 'b_do_age_estimation', false );
+    b_do_age_estimation         = getFieldWithDefault ( str_age_estimation, 'b_do_age_estimation', false );
      
     if ( b_do_age_estimation )
         str_results_age_estimation ...
@@ -68,7 +68,7 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_age_group_estimator           = getFieldWithDefault ( str_age_group_estimation, 'str_age_group_estimator', struct('name', {}, 'mfunction', {} ) );
     str_settings_age_group_estimation = getFieldWithDefault ( str_age_group_estimation, 'str_settings_age_group_estimation', [] );        
     
-    b_do_age_group_estimation         = getFieldWithDefault ( str_settings_age_group_estimation, 'b_do_age_group_estimation', false );
+    b_do_age_group_estimation         = getFieldWithDefault ( str_age_group_estimation, 'b_do_age_group_estimation', false );
      
     if ( b_do_age_group_estimation )
         str_results_age_group_estimation ...
@@ -80,15 +80,13 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_gender_estimator           = getFieldWithDefault ( str_gender_estimation, 'str_gender_estimator', struct('name', {}, 'mfunction', {} ) );
     str_settings_gender_estimation = getFieldWithDefault ( str_gender_estimation, 'str_settings_gender_estimation', [] );        
     
-    b_do_gender_estimation         = getFieldWithDefault ( str_settings_gender_estimation, 'b_do_gender_estimation', false );
+    b_do_gender_estimation         = getFieldWithDefault ( str_gender_estimation, 'b_do_gender_estimation', false );
      
     if ( b_do_gender_estimation )
         str_results_gender_estimation ...
                                    = str_gender_estimator.mfunction ( str_extracted_features, str_settings_gender_estimation );
     end
-    
-    str_settings_gender_estimation = getFieldWithDefault ( str_settings, 'str_settings_gender_estimation', []);
-    
+      
    
     %% assign outputs
     str_results = [];
