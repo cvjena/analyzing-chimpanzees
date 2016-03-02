@@ -5,7 +5,7 @@ function str_out = age_regressor_GP ( str_extracted_features, str_settings )
 %  INPUT:
 % 
 %  OUTPUT:
-%     str_out.f_age = estimated age of the detected chimpansees in the image
+%     str_out.f_ages = estimated age of the detected chimpansees in the image
 
     %% check inputs
     gpmodel          = getFieldWithDefault ( str_settings, 'gpmodel',    [] );
@@ -23,6 +23,6 @@ function str_out = age_regressor_GP ( str_extracted_features, str_settings )
    
     %% assign outputs
     str_out       = [];
-    str_out.f_age = age_est;
+    str_out.f_ages = age_est;
     
 end
