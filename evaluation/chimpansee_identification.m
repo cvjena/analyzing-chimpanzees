@@ -4,11 +4,12 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
         settings = [];
     end
     
-    settingsData = getFieldWithDefault( settings, 'settingsData', [] );
-    datasplits = getFieldWithDefault ( settings, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
-    results    = struct ( 's_name', {}, 'f_arr', {}, 'datasplits', datasplits);
+    settingsData   = getFieldWithDefault( settings, 'settingsData', [] );
+    datasplits     = getFieldWithDefault ( settings, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
     
-    b_verbose  =  getFieldWithDefault ( settings, 'b_verbose', true );
+    b_verbose      =  getFieldWithDefault ( settings, 'b_verbose', true );
+    b_return_model =  getFieldWithDefault ( settings, 'b_return_model', false );    
+    
     
     %% load data split
     if ( ~isempty(  datasplits ) )
@@ -117,9 +118,6 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
     svmmodel = liblinear_train ( labelsTrain', sparse(double(dataTrain')), settingsLibLinear );
     
     
-    
-
-    
         
     %% apply classification model to test data
 
@@ -140,6 +138,11 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
     results.predicted_label = predicted_label;    
     results.labelsTest      = labelsTest;    
     results.labelsTrain     = labelsTrain;        
+    
+    if ( b_return_model )
+        results.svmmodel          = svmmodel;       
+        results.settingsLibLinear = settingsLibLinear;       
+    end
     
     
   

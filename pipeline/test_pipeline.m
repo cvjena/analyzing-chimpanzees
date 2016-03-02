@@ -38,7 +38,7 @@ if ( ~b_load_CNN_activations )
     
     % setup caffe framework
     b_useGPU = false;
-    i_idxGPU = 1;
+    i_idxGPU = 0; % remind that the CUDA device count is 0-based!
     if ( b_useGPU )
         caffe.set_mode_gpu();
         caffe.set_device( i_idxGPU );
@@ -47,8 +47,8 @@ if ( ~b_load_CNN_activations )
     end
     
     % specify the network
-    s_pathtodeployfile       = '/home/freytag/code/3rdParty/caffeemodels/alexnet/deploy.prototxt';
-    s_pathtomodel            = '/home/freytag/code/3rdParty/caffeemodels/alexnet/bvlc_reference_caffenet.caffemodel'; %CNN precomputed from ImageNet
+    s_pathtodeployfile       = '/home/freytag/code/3rdParty/caffemodels/bvlc_reference_caffenet/deploy.prototxt';
+    s_pathtomodel            = '/home/freytag/code/3rdParty/caffemodels/bvlc_reference_caffenet/bvlc_reference_caffenet.caffemodel'; %CNN precomputed from ImageNet
     s_phase                  = 'test'; % run with phase test (so that dropout isn't applied)    
     %
     %specify the mean file
@@ -61,11 +61,21 @@ if ( ~b_load_CNN_activations )
     
     str_settings_tmp.net     = net;
     str_settings_tmp.f_mean  = mean_data;
-    
+        
     % old call for old caffe version... : matcaffe_init(1,s_pathtodeployfile,s_pathtomodel,1);
     %
     % which layer to extract activations from?
-    str_settings_tmp.s_layer = 'pool5';
+    str_settingsCaffe.s_layer = 'pool5';
+    str_settingsCaffe.b_apply_bilinear_pooling ...
+                              = false;
+    str_settingsCaffe.b_skip_normalization_in_bilinear_pooling ...
+                              = false;
+    str_settingsCaffe.b_apply_log_M ...
+                              = false;
+    str_settingsCaffe.f_sigma = 1e-5;
+    
+    str_settings_tmp.str_settingsCaffe ...
+                              = str_settingsCaffe;
     % old caffe layout:
     %s_meanfile               = '/home/freytag/lib/caffe_pp_pollux/matlab/caffe/ilsvrc_2012_mean.mat';
     %d                        = load(s_meanfile);
