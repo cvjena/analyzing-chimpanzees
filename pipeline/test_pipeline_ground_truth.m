@@ -152,6 +152,10 @@ function str_results_all = test_pipeline_ground_truth
 
     %% general options
     str_settings.b_visualize_results = true;
+    str_settings.b_write_results     = true;
+    %s_dest_results_main              = '/home/freytag/experiments/2016-03-15-chimpanzee-detection-and-identification/ChimpZoo/';
+    s_dest_results_main              = '/home/freytag/experiments/2016-03-24-chimpanzee-pipeline_results_with_gt_boxes/gt_infos/ChimpZoo/';
+    str_settings.f_timeToWait        = 0;
 
 
     %% specify the test image 
@@ -191,6 +195,13 @@ function str_results_all = test_pipeline_ground_truth
         str_settings.str_age_estimation.str_settings_age_estimation.s_fn             = s_fn;
         str_settings.str_age_group_estimation.str_settings_age_group_estimation.s_fn = s_fn;    
         str_settings.str_gender_estimation.str_settings_gender_estimation.s_fn       = s_fn;
+        
+        if ( str_settings.b_write_results )
+            idxDot   = strfind ( s_fn, '.' );
+            idxSlash = strfind ( s_fn, '/'  );
+            s_image_name = s_fn( (idxSlash(end)+1) : (idxDot(end)-1) );
+            str_settings.s_dest_to_save = sprintf( '%s%s', s_dest_results_main, s_image_name);
+        end        
 
 
         % go go go ...

@@ -12,9 +12,11 @@ function str_results_all = test_pipeline
     str_detection = [];
 
     str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
+    %str_face_detector                   = struct('name', 'Pre-Computed with YOLO', 'mfunction', @face_detector_precomputed_boxes );    
     str_settings_tmp                    = [];
     str_settings_tmp.s_fn               = '';
     str_settings_tmp.b_show_detections  = false;
+    str_settings_tmp.s_destBoxes        = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/chimpzoo_detection_bboxes.txt';%.'/home/freytag/experiments/2015-11-18-schimpansen-leipzig/detection/quantitative/chimpzoo_detection_bboxes.txt';
     %
     str_settings_tmp.str_settings_detection ...
                                         = str_settings_tmp;
@@ -34,9 +36,11 @@ function str_results_all = test_pipeline
 
     b_load_CNN_activations = false;
 
+    % pre-comupted CNN activations are only available for ground truth face
+    % regions!
     if ( ~b_load_CNN_activations )
         %addPathSafely ( '/home/freytag/lib/caffe_pp_pollux/matlab/caffe/', true, true)
-        addPathSafely ( '/home/freytag/code/caffe/matlab/caffe/', true, true)
+        %addPathSafely ( '/home/freytag/code/caffe/matlab/caffe/', true, true)
         
         % this is the actual method        
         str_feature_extractor       = struct('name', 'pre-computed CNN activations', 'mfunction', @feature_extractor_CNN_activations );
@@ -46,7 +50,7 @@ function str_results_all = test_pipeline
         str_settings_tmp       = [];        
 
         % setup caffe framework
-        b_useGPU = false;
+        b_useGPU = true;
         i_idxGPU = 0; % remind that the CUDA device count is 0-based!
         if ( b_useGPU )
             caffe.set_mode_gpu();
@@ -103,10 +107,10 @@ function str_results_all = test_pipeline
         str_settings_tmp.s_destFeat = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/features/ChimpZoo/AlexNet/featpool5.mat';
 
         s_destData = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/preprocess/data_ChimpZoo/';
-        settingsLoad.b_load_age               = false;
-        settingsLoad.b_load_gender            = false;
-        settingsLoad.b_load_age_group         = false;
-        settingsLoad.b_load_identity          = false;
+        settingsLoad.b_load_age               = true;
+        settingsLoad.b_load_gender            = true;
+        settingsLoad.b_load_age_group         = true;
+        settingsLoad.b_load_identity          = true;
         settingsLoad.b_load_dataset_name      = false;
         dataset_chimpansees                   = load_chimpansees( s_destData, settingsLoad );
         str_settings_tmp.dataset              = dataset_chimpansees;
@@ -269,7 +273,11 @@ function str_results_all = test_pipeline
 
     %% general options
     str_settings.b_visualize_results = true;
-
+    str_settings.b_write_results     = true;
+    %s_dest_results_main              = '/home/freytag/experiments/2016-03-15-chimpanzee-detection-and-identification/ChimpZoo/';
+    s_dest_results_main              = '/home/freytag/experiments/2016-03-24-chimpanzee-pipeline_results_with_gt_boxes/ChimpZoo/';
+    str_settings.f_timeToWait        = 0;
+    
 
     %% specify the test image 
     % %option 1
@@ -296,8 +304,10 @@ function str_results_all = test_pipeline
 
 
     str_results_all = {};
+    
+    i_perm = randperm( length( s_images ) );
     for i_imgIdx=1:length( s_images )
-        s_fn        = s_images { i_imgIdx };
+        s_fn        = s_images { i_perm(i_imgIdx) };
         image       = imread ( s_fn ); 
 
         % adapt nasty image-fn-specific gt-settings
@@ -305,11 +315,19 @@ function str_results_all = test_pipeline
         if ( b_load_CNN_activations ) 
             str_settings.str_feature_extraction.str_settings_feature_extraction.s_fn = s_fn;
         end
+        
+        if ( str_settings.b_write_results )
+            idxDot   = strfind ( s_fn, '.' );
+            idxSlash = strfind ( s_fn, '/'  );
+            s_image_name = s_fn( (idxSlash(end)+1) : (idxDot(end)-1) );
+            str_settings.s_dest_to_save = sprintf( '%s%s', s_dest_results_main, s_image_name);
+        end
 
 
         % go go go ...
         str_results = pipeline_all_about_apes ( image, str_settings );
-        str_results_all{i_imgIdx} = str_results_all;
+        str_results_all{ i_perm(i_imgIdx) } = str_results_all;
     end
 
+    caffe.reset_all;
 end

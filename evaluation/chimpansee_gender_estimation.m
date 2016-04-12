@@ -52,6 +52,11 @@ function results = chimpansee_gender_estimation( dataset_chimpansees, settings )
     else
         error ( 'CNN features not readable!' )
     end
+
+    b_normalize_features_L2 = getFieldWithDefault ( settings, 'b_normalize_features_L2', false );
+    if ( b_normalize_features_L2 )
+        featCNN = featCNN/(diag(sqrt(diag(featCNN'*featCNN))));
+    end
     
     dataTrain   = featCNN( :,idxTrain );
     labelsTrain = dataset_chimpansees.f_genders( idxTrain )';

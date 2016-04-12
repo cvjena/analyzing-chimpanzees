@@ -1,7 +1,7 @@
 function [tp, fp] = myROC(gtLabels, scores)
 
 
-    noInstances = size(scores,1);
+    noInstances = length(scores);
 
     % sort by classifier output 
     try % compatibility with old Matlab versions

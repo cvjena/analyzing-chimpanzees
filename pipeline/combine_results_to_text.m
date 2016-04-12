@@ -28,6 +28,12 @@ function s_est_attributes_combined =  combine_results_to_text ( str_results )
              s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_gender_estimation.s_genders{idxObj}];            
         end          
     
-        
+        % removing trailing ' - '
+        idxOfConcatSymb = findstr ( s_est_attributes_combined{idxObj},  ' - ' );
+        if ( ismember ( 1, idxOfConcatSymb ) )
+            s_est_attributes_combined{idxObj} = s_est_attributes_combined{idxObj} ( length(' - ')+1:end );
+        end
     end
+    
+
 end

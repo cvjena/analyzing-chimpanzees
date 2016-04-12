@@ -52,6 +52,11 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
     else
         error ( 'CNN features not readable!' )
     end
+
+    b_normalize_features_L2 = getFieldWithDefault ( settings, 'b_normalize_features_L2', false );
+    if ( b_normalize_features_L2 )
+        featCNN = featCNN/(diag(sqrt(diag(featCNN'*featCNN))));
+    end 
     
     dataTrain   = featCNN( :,idxTrain );
     labelsTrain = dataset_chimpansees.f_labels_age_groups( idxTrain )';
@@ -112,13 +117,15 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
     %
     results.predicted_age_group = predicted_age_group;    
     results.labelsTest          = labelsTest;    
-    results.labelsTrain         = labelsTrain;    
-   
-    
-%     %% visualize results
-%     figure;
-%     scatter ( ~labelsTest, scores' );
-    
+    results.labelsTrain         = labelsTrain; 
+    %
+    results.svmmodel            = svmmodel; 
+    if ( getFieldWithDefault ( settingsLibLinear, 'b_cross_val', true ) ) 
+        results.f_paramC            = f_paramC; 
+        results.scoresC             = scoresC; 
+    end
+    results.settingsLibLinear   = settingsLibLinear; 
+       
 end
 
 

@@ -6,6 +6,8 @@ function str_out = feature_extractor_CNN_activations ( image, str_boxes, str_set
     %% get specifications
     str_settingsCaffe = getFieldWithDefault ( str_settings, 'str_settingsCaffe', [] );
     f_mean            = getFieldWithDefault ( str_settings, 'f_mean', [] );
+    
+    features = [];
 
     %% crop detections from given image
     

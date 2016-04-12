@@ -21,7 +21,6 @@ function initWorkspaceChimpanzees
     %% setup paths of 3rd-party libraries in a user-specific manner
 
     % feature extraction
-    CAFFEDIR            = [];
     CAFFETOOLSDIR       = [];    
     
     % identification
@@ -34,9 +33,6 @@ function initWorkspaceChimpanzees
         [~, s_hostname]       = system( 'hostname' );
         s_hostname            = s_hostname ( 1:(length(s_hostname)-1) ) ;    
         
-        s_dest_caffebuild     = sprintf( '/home/freytag/lib/caffe_%s/matlab/', s_hostname );    
-        CAFFEDIR              = s_dest_caffebuild;
-        
         CAFFETOOLSDIR         = '/home/freytag/code/matlab/caffe_tools/';
         
         s_dest_liblinearbuild = sprintf( '%smatlab-%s', '/home/freytag/code/3rdParty/liblinear-1.93/', s_hostname );    
@@ -45,6 +41,10 @@ function initWorkspaceChimpanzees
         LIBLINEARWRAPPERDIR   = '/home/freytag/code/matlab/classifiers/liblinearWrapper/';
         
         GPMLDIR               = '/home/freytag/code/matlab/gpml/';
+    elseif strcmp( getenv('USER'), 'simon')     
+                
+        CAFFETOOLSDIR         = '/home/freytag/code/matlab/caffe_tools/';    
+        
     else          
         fprintf('Unknown user %s and unknown default settings', getenv('USER') ); 
     end
@@ -152,21 +152,13 @@ function initWorkspaceChimpanzees
     
     %% 3rd party, untouched   
     
-    
-    if ( isempty(CAFFEDIR) )
-        fprintf('initWSChimp-WARNING - no CAFFEDIR dir found on your machine. Code is available at http://caffe.berkeleyvision.org/installation.html \n');
-    else
-        b_recursive             = true; 
-        b_overwrite             = true;
-        addPathSafely ( CAFFEDIR, b_recursive, b_overwrite );        
-    end      
-    
     if ( isempty(CAFFETOOLSDIR) )
         fprintf('initWSChimp-WARNING - no CAFFETOOLSDIR dir found on your machine. Code is available at git@dbv.inf-cv.uni-jena.de:matlab-tools/caffe_tools.git \n');
     else
-        b_recursive             = true; 
-        b_overwrite             = true;
-        addPathSafely ( CAFFETOOLSDIR, b_recursive, b_overwrite );        
+        currentDir = pwd;
+        cd ( CAFFETOOLSDIR );
+        initWorkspaceCaffeTools;
+        cd ( currentDir );      
     end
     
     if ( isempty(LIBLINEARDIR) )
@@ -197,7 +189,6 @@ function initWorkspaceChimpanzees
           
     
     %% clean up    
-    clear( 'CAFFEDIR' );
     clear( 'CAFFETOOLSDIR' );    
     clear( 'LIBLINEARDIR' ); 
     clear( 'LIBLINEARWRAPPERDIR' );

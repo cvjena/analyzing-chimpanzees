@@ -8,7 +8,7 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
     datasplits     = getFieldWithDefault ( settings, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
     
     b_verbose      =  getFieldWithDefault ( settings, 'b_verbose', true );
-    b_return_model =  getFieldWithDefault ( settings, 'b_return_model', false );    
+    b_return_model =  getFieldWithDefault ( settings, 'b_return_model', true );    
     
     
     %% load data split
@@ -48,6 +48,11 @@ function results = chimpansee_identification( dataset_chimpansees, settings )
         featCNN = featCNN.feat.(featCNN.feat.name);
     else
         error ( 'CNN features not readable!' )
+    end
+    
+    b_normalize_features_L2 = getFieldWithDefault ( settings, 'b_normalize_features_L2', false );
+    if ( b_normalize_features_L2 )
+        featCNN = featCNN/(diag(sqrt(diag(featCNN'*featCNN))));
     end
 
     dataTrain     = featCNN( :,idxTrain );
