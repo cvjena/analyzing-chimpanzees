@@ -34,7 +34,7 @@ function str_results_all = test_pipeline
     str_feature_extraction  = [];% that's the overall struct for everything which is identification-related
     % we always need to extract features... so no need for a separate flag
 
-    b_load_CNN_activations = false;
+    b_load_CNN_activations = true;
 
     % pre-comupted CNN activations are only available for ground truth face
     % regions!
@@ -273,10 +273,10 @@ function str_results_all = test_pipeline
 
     %% general options
     str_settings.b_visualize_results = true;
-    str_settings.b_write_results     = true;
+    str_settings.b_write_results     = false;
     %s_dest_results_main              = '/home/freytag/experiments/2016-03-15-chimpanzee-detection-and-identification/ChimpZoo/';
     s_dest_results_main              = '/home/freytag/experiments/2016-03-24-chimpanzee-pipeline_results_with_gt_boxes/ChimpZoo/';
-    str_settings.f_timeToWait        = 0;
+    str_settings.f_timeToWait        = 5;
     
 
     %% specify the test image 

@@ -41,6 +41,19 @@ function initWorkspaceChimpanzees
         LIBLINEARWRAPPERDIR   = '/home/freytag/code/matlab/classifiers/liblinearWrapper/';
         
         GPMLDIR               = '/home/freytag/code/matlab/gpml/';
+    elseif strcmp( getenv('USER'), 'rodner')
+        [~, s_hostname]       = system( 'hostname' );
+        s_hostname            = s_hostname ( 1:(length(s_hostname)-1) ) ;
+
+        CAFFETOOLSDIR         = '/home/freytag/code/matlab/caffe_tools/';
+
+        s_dest_liblinearbuild = '/home/freytag/code/3rdParty/liblinear-1.93/matlab-pollux/';
+        LIBLINEARDIR          = s_dest_liblinearbuild;
+
+        LIBLINEARWRAPPERDIR   = '/home/freytag/code/matlab/classifiers/liblinearWrapper/';
+
+        GPMLDIR               = '/home/freytag/code/matlab/gpml/';
+
     elseif strcmp( getenv('USER'), 'simon')     
                 
         CAFFETOOLSDIR         = '/home/freytag/code/matlab/caffe_tools/';    
