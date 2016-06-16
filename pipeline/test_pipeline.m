@@ -1,4 +1,15 @@
 function str_results_all = test_pipeline
+% function str_results_all = test_pipeline
+%  BRIEF
+%    
+%
+%  INPUT
+%    
+%    str_settings -- struct, optional, the following fields are supported
+%
+%  OUTPUT
+% 
+%  author: Alexander Freytag
 
     %% set up required directories
 
@@ -11,8 +22,8 @@ function str_results_all = test_pipeline
     %% settings for 1 - detect and localize faces
     str_detection = [];
 
-    str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
-    %str_face_detector                   = struct('name', 'Pre-Computed with YOLO', 'mfunction', @face_detector_precomputed_boxes );    
+    %str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
+    str_face_detector                   = struct('name', 'Pre-Computed with YOLO', 'mfunction', @face_detector_precomputed_boxes );    
     str_settings_tmp                    = [];
     str_settings_tmp.s_fn               = '';
     str_settings_tmp.b_show_detections  = false;

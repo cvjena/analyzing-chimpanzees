@@ -1,4 +1,15 @@
 function str_results = pipeline_all_about_apes ( img, str_settings )
+% function str_results = pipeline_all_about_apes ( img, str_settings )
+%  BRIEF
+%    
+%
+%  INPUT
+%    
+%    str_settings -- struct, optional, the following fields are supported
+%
+%  OUTPUT
+% 
+%  author: Alexander Freytag
 
     str_results = [];
 
@@ -142,7 +153,7 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
         hold on;
         
         % show detections
-        show_boxes ( hAxes, str_detected_faces.i_face_regions');        
+        show_boxes ( str_detected_faces.i_face_regions', hAxes);        
         
         % plot text with estimated attributes nex to the bounding boxes
         str_settings_text = [];
