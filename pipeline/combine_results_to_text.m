@@ -12,20 +12,36 @@ function s_est_attributes_combined =  combine_results_to_text ( str_results )
         end
         
         if ( isfield(str_results, 'str_results_identification' ) )
-             s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_identification.s_names{idxObj}];
+            if ( length(str_results.str_results_identification.s_names) >= idxObj )
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_identification.s_names{idxObj}];
+            else
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', 'unknown'];
+            end
         end
         
-        if ( isfield(str_results, 'str_results_age_estimation' ) )
-            s_formatSpec = '%2.1f';
-            s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', num2str(str_results.str_results_age_estimation.f_ages(idxObj), s_formatSpec), 'y'];
+        if ( isfield(str_results, 'str_results_age_estimation' ) )            
+            if ( length(str_results.str_results_age_estimation.f_ages) >= idxObj )
+                s_formatSpec = '%2.1f';
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', num2str(str_results.str_results_age_estimation.f_ages(idxObj), s_formatSpec), 'y'];
+            else
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', '?', 'y'];
+            end
         end        
         
         if ( isfield(str_results, 'str_results_age_group_estimation' ) )
-             s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_age_group_estimation.s_age_groups{idxObj}];            
+            if ( length(str_results.str_results_age_group_estimation.s_age_groups) >= idxObj )
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_age_group_estimation.s_age_groups{idxObj}];            
+            else
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', 'unknown age group'];            
+            end
         end  
         
         if ( isfield(str_results, 'str_results_gender_estimation' ) )
-             s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_gender_estimation.s_genders{idxObj}];            
+            if ( length(str_results.str_results_gender_estimation.s_genders) >= idxObj )
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', str_results.str_results_gender_estimation.s_genders{idxObj}];            
+            else
+                s_est_attributes_combined{idxObj} = [ s_est_attributes_combined{idxObj} , ' - ', 'unknown gender'];            
+            end
         end          
     
         % removing trailing ' - '

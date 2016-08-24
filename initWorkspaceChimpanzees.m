@@ -28,6 +28,9 @@ function initWorkspaceChimpanzees
     LIBLINEARWRAPPERDIR = [];  
     % age regression
     GPMLDIR             = [];
+    
+    % face detection
+    DARKNETDIR          = [];     
         
     if strcmp( getenv('USER'), 'freytag')     
         [~, s_hostname]       = system( 'hostname' );
@@ -41,6 +44,9 @@ function initWorkspaceChimpanzees
         LIBLINEARWRAPPERDIR   = '/home/freytag/code/matlab/classifiers/liblinearWrapper/';
         
         GPMLDIR               = '/home/freytag/code/matlab/gpml/';
+        
+        DARKNETDIR            = sprintf( '/home/freytag/lib/darknet_%s/', s_hostname );
+        
     elseif strcmp( getenv('USER'), 'rodner')
         [~, s_hostname]       = system( 'hostname' );
         s_hostname            = s_hostname ( 1:(length(s_hostname)-1) ) ;
@@ -199,13 +205,29 @@ function initWorkspaceChimpanzees
         b_overwrite             = true;
         addPathSafely ( GPMLDIR, b_recursive, b_overwrite );     
     end      
+    
+    if ( isempty(DARKNETDIR) )
+        fprintf('initWSChimp-WARNING - no DARKNETDIR dir found on your machine. Code is available at LINK-To-GitHub \n');
+    else
+        % check if darknet has already been compiled successfully
+        if ( exist( sprintf( '%sdarknet', DARKNETDIR) ,'file') )
+            global s_path_to_darknet;
+            s_path_to_darknet = DARKNETDIR;        
+            % NOTE
+            % If we should every write a Matlab interface to Darknet,
+            % then add the paths here accordingly
+        else
+            fprintf('initWSChimp-WARNING - Darknet not yet compiled! \n');
+        end
+    end    
           
     
     %% clean up    
     clear( 'CAFFETOOLSDIR' );    
     clear( 'LIBLINEARDIR' ); 
     clear( 'LIBLINEARWRAPPERDIR' );
-    clear( 'GPMLDIR' );    
+    clear( 'GPMLDIR' );
+    clear( 'DARKNETDIR' );    
     
         
 end
