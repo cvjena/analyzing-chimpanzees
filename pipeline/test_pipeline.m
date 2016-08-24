@@ -21,13 +21,36 @@ function str_results_all = test_pipeline
 
     %% settings for 1 - detect and localize faces
     str_detection = [];
+    
+    % option 1 - use ground truth regions
+%     str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
+%     str_settings_tmp                    = [];
+%     str_settings_tmp.s_fn               = '';
+%     str_settings_tmp.b_show_detections  = false;  
 
-    %str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
-    str_face_detector                   = struct('name', 'Pre-Computed with YOLO', 'mfunction', @face_detector_precomputed_boxes );    
+    % option 2 - use pre-computed regions
+%     str_face_detector                   = struct('name', 'Pre-Computed with YOLO', 'mfunction', @face_detector_precomputed_boxes );    
+%     str_settings_tmp                    = [];
+%     str_settings_tmp.s_fn               = '';
+%     str_settings_tmp.b_show_detections  = false;
+%     str_settings_tmp.s_destBoxes        = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/chimpzoo_detection_bboxes.txt';%.'/home/freytag/experiments/2015-11-18-schimpansen-leipzig/detection/quantitative/chimpzoo_detection_bboxes.txt';    
+%     
+    % option 3 - use detection model
+    str_face_detector                   = struct('name', 'Run Yolo Detecion Model via Terminal', 'mfunction', @face_detector_yolo_via_terminal );
     str_settings_tmp                    = [];
     str_settings_tmp.s_fn               = '';
     str_settings_tmp.b_show_detections  = false;
-    str_settings_tmp.s_destBoxes        = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/chimpzoo_detection_bboxes.txt';%.'/home/freytag/experiments/2015-11-18-schimpansen-leipzig/detection/quantitative/chimpzoo_detection_bboxes.txt';
+    %
+    global s_path_to_darknet;
+    str_settings_tmp.s_path_to_darknet  = s_path_to_darknet;
+    str_settings_tmp.s_path_to_cfg      = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/yolo-for-zoo.cfg';
+    str_settings_tmp.s_path_to_weights  = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/yolo_zoo_single_class/yolo-for-zoo_20000.weights';
+    str_settings_tmp.s_fn_class_labels  = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/classnames_zoo_single_class.txt';
+    str_settings_tmp.s_fn_boxes_tmp     = '/tmp/boxes_tmp.txt';
+    str_settings_tmp.f_thresh           = 0.1;
+    str_settings_tmp.f_nms              = 0.5;
+   
+
     %
     str_settings_tmp.str_settings_detection ...
                                         = str_settings_tmp;
@@ -45,7 +68,7 @@ function str_results_all = test_pipeline
     str_feature_extraction  = [];% that's the overall struct for everything which is identification-related
     % we always need to extract features... so no need for a separate flag
 
-    b_load_CNN_activations = true;
+    b_load_CNN_activations = false;
 
     % pre-comupted CNN activations are only available for ground truth face
     % regions!
@@ -315,6 +338,9 @@ function str_results_all = test_pipeline
 
 
     str_results_all = {};
+    
+    %FIXME set random seed if desired
+    rng(4711);
     
     i_perm = randperm( length( s_images ) );
     for i_imgIdx=1:length( s_images )
