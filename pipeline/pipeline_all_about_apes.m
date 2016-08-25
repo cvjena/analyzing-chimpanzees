@@ -27,7 +27,10 @@ function str_results = pipeline_all_about_apes ( img, str_settings )
     str_feature_extractor           = getFieldWithDefault ( str_feature_extraction, 'str_feature_extractor', struct('name', {}, 'mfunction', {} ) );
     str_settings_feature_extraction = getFieldWithDefault ( str_feature_extraction, 'str_settings_feature_extraction', [] );
     
-    str_extracted_features          = str_feature_extractor.mfunction ( img, str_detected_faces, str_settings_feature_extraction );
+    str_extracted_features          = [];
+    if ( ~isempty(str_feature_extractor) &&  ~isempty( str_feature_extractor.mfunction ) )
+        str_feature_extractor.mfunction ( img, str_detected_faces, str_settings_feature_extraction );
+    end
     
     %% 3.1 - decide for known/unknown of each face hypothesis (open-set)
     str_novelty_detection  = getFieldWithDefault ( str_settings, 'str_novelty_detection', []);
