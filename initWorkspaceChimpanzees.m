@@ -16,6 +16,10 @@ function initWorkspaceChimpanzees
 %        cd ( currentDir );
 % 
 
+    %% make current path known as global variable
+    % useful for demos etc.
+    global s_path_to_chimp_repo;
+    s_path_to_chimp_repo = sprintf( '%s/', fullfile(pwd) );
 
 
     %% setup paths of 3rd-party libraries in a user-specific manner
@@ -46,6 +50,18 @@ function initWorkspaceChimpanzees
         GPMLDIR               = '/home/freytag/code/matlab/gpml/';
         
         DARKNETDIR            = sprintf( '/home/freytag/lib/darknet_%s/', s_hostname );
+        
+    elseif strcmp( getenv('USER'), 'alex') 
+        
+        CAFFETOOLSDIR         = '/home/alex/code/matlab/caffe_tools/';
+        
+        LIBLINEARDIR          = '/home/alex/code/matlab/liblinearwrapper/';
+        
+        LIBLINEARWRAPPERDIR   = '/home/alex/code/matlab/libsvmwrapper/';
+        
+        GPMLDIR               = '/home/alex/code/matlab/matlabChair/gpml/';
+        
+        DARKNETDIR            = '/home/alex/lib/darknet/';
         
     elseif strcmp( getenv('USER'), 'rodner')
         [~, s_hostname]       = system( 'hostname' );
@@ -215,7 +231,7 @@ function initWorkspaceChimpanzees
     end      
     
     if ( isempty(DARKNETDIR) )
-        fprintf('initWSChimp-WARNING - no DARKNETDIR dir found on your machine. Code is available at LINK-To-GitHub \n');
+        fprintf('initWSChimp-WARNING - no DARKNETDIR dir found on your machine. Code is available at https://github.com/cvjena/darknet \n');
     else
         % check if darknet has already been compiled successfully
         if ( exist( sprintf( '%sdarknet', DARKNETDIR) ,'file') )

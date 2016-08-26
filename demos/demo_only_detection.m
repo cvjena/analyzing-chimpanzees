@@ -38,9 +38,10 @@ function str_results_all = demo_only_detection
     %
     global s_path_to_darknet;
     str_settings_tmp.s_path_to_darknet  = s_path_to_darknet;
-    str_settings_tmp.s_path_to_cfg      = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/yolo-for-zoo.cfg';
-    str_settings_tmp.s_path_to_weights  = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/yolo_zoo_single_class/yolo-for-zoo_20000.weights';
-    str_settings_tmp.s_fn_class_labels  = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/classnames_zoo_single_class.txt';
+    global s_path_to_chimp_repo;
+    str_settings_tmp.s_path_to_cfg      = sprintf('%sdemos/models/yolo-ape-detection/yolo-for-zoo.cfg', s_path_to_chimp_repo );
+    str_settings_tmp.s_path_to_weights  = sprintf('%sdemos/models/yolo-ape-detection/yolo-for-zoo_20000.weights', s_path_to_chimp_repo );
+    str_settings_tmp.s_fn_class_labels  = sprintf('%sdemos/models/yolo-ape-detection/classnames_zoo_single_class.txt', s_path_to_chimp_repo );
     str_settings_tmp.s_fn_boxes_tmp     = '/tmp/boxes_tmp.txt';
     str_settings_tmp.f_thresh           = 0.1;
     str_settings_tmp.f_nms              = 0.5;
@@ -114,32 +115,29 @@ function str_results_all = demo_only_detection
     %% general options
     str_settings.b_visualize_results = true;
     str_settings.b_write_results     = false;
-    s_dest_results_main              = './demos/results/';
+    s_dest_results_main              = sprintf('%sdemos/results/', s_path_to_chimp_repo );
     str_settings.f_timeToWait        = 5;
     
 
     %% specify the test image 
     % %option 1
     % %first face is in training set - this is the corresponding image
-    % s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_25-06-10_T00_02_09.png';
-    %
-    % %option 2
-    % %the fourth face is not in training set - this is the corresponding image
-    % s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_30-06-10_1_T00_00_00_Jahaga.png';
-    %
-    % %option 3
-    % loop over all images
+    s_images = { sprintf( '%sdemos/data/Alex_25-06-10_T00_02_09.png', s_path_to_chimp_repo ), ...
+                 sprintf( '%sdemos/data/Alex_30-06-10_1_T00_00_00_Jahaga.png', s_path_to_chimp_repo ) ...
+               };
 
-
-    s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
-    % fileId value - open the file
-    fid = fopen( s_destDatasetUncropped );
-    % reads data from open test file into cell array (%s -> read string)
-    s_images = textscan(fid, '%s', 'Delimiter','\n');
-    % get all images
-    s_images = s_images{1};
-    %
-    fclose ( fid );
+%     % %option 2
+%     % loop over images of the original dataset, which will soon be released
+% 
+%     s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
+%     % fileId value - open the file
+%     fid = fopen( s_destDatasetUncropped );
+%     % reads data from open test file into cell array (%s -> read string)
+%     s_images = textscan(fid, '%s', 'Delimiter','\n');
+%     % get all images
+%     s_images = s_images{1};
+%     %
+%     fclose ( fid );
 
 
     str_results_all = {};
