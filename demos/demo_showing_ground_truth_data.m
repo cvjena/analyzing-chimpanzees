@@ -1,19 +1,16 @@
-function str_results_all = test_pipeline
-% function str_results_all = test_pipeline
+function str_results_all = demo_showing_ground_truth_data
+% function str_results_all = demo_showing_ground_truth_data
 %  BRIEF
-%    
-%
-%  INPUT
-%    
-%    str_settings -- struct, optional, the following fields are supported
+%    Loop over test images and visualize their ground truth annotations.
 %
 %  OUTPUT
+%      str_results_all
 % 
 %  author: Alexander Freytag
 
     %% set up required directories
-
-    s_cacheDir = './pipeline/cache/';
+    global s_path_to_chimp_repo;
+    s_cacheDir = sprintf('%spipeline/cache/', s_path_to_chimp_repo );
 
     if ( ~(exist( s_cacheDir, 'dir' ) ) )
         mkdir ( s_cacheDir );
@@ -153,32 +150,28 @@ function str_results_all = test_pipeline
     %% general options
     str_settings.b_visualize_results = true;
     str_settings.b_write_results     = false;
-    s_dest_results_main              = './demos/results/';
+    s_dest_results_main              = sprintf('%sdemos/results/', s_path_to_chimp_repo );
     str_settings.f_timeToWait        = 5;
     
-
-    %% specify the test image 
+    %% specify the test images
     % %option 1
     % %first face is in training set - this is the corresponding image
-    % s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_25-06-10_T00_02_09.png';
-    %
-    % %option 2
-    % %the fourth face is not in training set - this is the corresponding image
-    % s_fn  = '/home/dbv/datasets/schimpansen_leipzig/ChimpZoo/Alex_30-06-10_1_T00_00_00_Jahaga.png';
-    %
-    % %option 3
-    % loop over all images
+    s_images = { sprintf( '%sdemos/data/Alex_25-06-10_T00_02_09.png', s_path_to_chimp_repo ), ...
+                 sprintf( '%sdemos/data/Alex_30-06-10_1_T00_00_00_Jahaga.png', s_path_to_chimp_repo ) ...
+               };
 
-
-    s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
-    % fileId value - open the file
-    fid = fopen( s_destDatasetUncropped );
-    % reads data from open test file into cell array (%s -> read string)
-    s_images = textscan(fid, '%s', 'Delimiter','\n');
-    % get all images
-    s_images = s_images{1};
-    %
-    fclose ( fid );
+%     % %option 2
+%     % loop over images of the original dataset, which will soon be released
+% 
+%     s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
+%     % fileId value - open the file
+%     fid = fopen( s_destDatasetUncropped );
+%     % reads data from open test file into cell array (%s -> read string)
+%     s_images = textscan(fid, '%s', 'Delimiter','\n');
+%     % get all images
+%     s_images = s_images{1};
+%     %
+%     fclose ( fid );
 
 
     str_results_all = {};
@@ -193,7 +186,13 @@ function str_results_all = test_pipeline
 
         % adapt nasty image-fn-specific gt-settings
         str_settings.str_face_detection.str_settings_face_detection.s_fn             = s_fn;
-
+        str_settings.str_feature_extraction.str_settings_feature_extraction.s_fn     = s_fn;    
+        str_settings.str_novelty_detection.str_settings_novelty_detection.s_fn       = s_fn;    
+        str_settings.str_identification.str_settings_identification.s_fn             = s_fn;    
+        str_settings.str_age_estimation.str_settings_age_estimation.s_fn             = s_fn;
+        str_settings.str_age_group_estimation.str_settings_age_group_estimation.s_fn = s_fn;    
+        str_settings.str_gender_estimation.str_settings_gender_estimation.s_fn       = s_fn;
+        
         if ( str_settings.b_write_results )
             idxDot   = strfind ( s_fn, '.' );
             idxSlash = strfind ( s_fn, '/'  );

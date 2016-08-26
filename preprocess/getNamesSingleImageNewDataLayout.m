@@ -22,8 +22,7 @@ function str_names  = getNamesSingleImageNewDataLayout ( s_fn, str_settings )
     %%
     str_names     = [];
     %%
-    s_ending      = getFieldWithDefault ( str_settings, 's_ending', '.xml' );
-    
+    s_ending      = getFieldWithDefault ( str_settings, 's_ending', '.xml' );    
 
     s_fnMetaData  =  sprintf('%s%s', s_fn, s_ending );
     
@@ -43,13 +42,9 @@ function str_names  = getNamesSingleImageNewDataLayout ( s_fn, str_settings )
         return
     end
     
-    i_numObjects      = length ( mystruct.(s_fieldnames{1}).frames.frame.objects.object );
-    try
+    i_numObjects      = length ( mystruct.(s_fieldnames{1}).frames.frame.objects.object );    
     i_numUniqueLabels = length ( mystruct.(s_fieldnames{1}).labels.label );
-    catch err
-        err
-    end
-     
+         
 
     %% differentiate number of objects ... if only one object, accessing data is directly as variable.field. otherwise variable{idx}.field
     %

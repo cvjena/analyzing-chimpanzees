@@ -11,17 +11,15 @@ function str_results_all = demo_only_detection
 %    offer realtime capability (~30fps for medium-sized models and GPU
 %    support).
 %
-%  INPUT
-%    
-%    str_settings -- struct, optional, the following fields are supported
 %
 %  OUTPUT
+%      str_results_all
 % 
 %  author: Alexander Freytag
 
     %% set up required directories
-
-    s_cacheDir = './pipeline/cache/';
+    global s_path_to_chimp_repo;
+    s_cacheDir = sprintf('%spipeline/cache/', s_path_to_chimp_repo );
 
     if ( ~(exist( s_cacheDir, 'dir' ) ) )
         mkdir ( s_cacheDir );
@@ -38,7 +36,7 @@ function str_results_all = demo_only_detection
     %
     global s_path_to_darknet;
     str_settings_tmp.s_path_to_darknet  = s_path_to_darknet;
-    global s_path_to_chimp_repo;
+    %
     str_settings_tmp.s_path_to_cfg      = sprintf('%sdemos/models/yolo-ape-detection/yolo-for-zoo.cfg', s_path_to_chimp_repo );
     str_settings_tmp.s_path_to_weights  = sprintf('%sdemos/models/yolo-ape-detection/yolo-for-zoo_20000.weights', s_path_to_chimp_repo );
     str_settings_tmp.s_fn_class_labels  = sprintf('%sdemos/models/yolo-ape-detection/classnames_zoo_single_class.txt', s_path_to_chimp_repo );
@@ -119,7 +117,7 @@ function str_results_all = demo_only_detection
     str_settings.f_timeToWait        = 5;
     
 
-    %% specify the test image 
+    %% specify the test images
     % %option 1
     % %first face is in training set - this is the corresponding image
     s_images = { sprintf( '%sdemos/data/Alex_25-06-10_T00_02_09.png', s_path_to_chimp_repo ), ...
