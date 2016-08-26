@@ -166,6 +166,14 @@ function initWorkspaceChimpanzees
     s_pathPipeline          = fullfile(pwd, 'pipeline');
     addPathSafely ( s_pathPipeline, b_recursive, b_overwrite )
     clear ( 's_pathPipeline' );      
+    
+    %%    
+    % everything for our nice demos
+    b_recursive             = true; 
+    b_overwrite             = true;
+    s_pathDemos             = fullfile(pwd, 'demos');
+    addPathSafely ( s_pathDemos, b_recursive, b_overwrite )
+    clear ( 's_pathDemos' );       
 
         
     
