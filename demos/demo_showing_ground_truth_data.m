@@ -1,15 +1,7 @@
-function str_results_all = demo_only_detection
-% function str_results_all = demo_only_detection
+function str_results_all = test_pipeline
+% function str_results_all = test_pipeline
 %  BRIEF
-%    Run a pre-trained object detection to detect chimpanzee faces in images. 
-%    No further analysis is provided.
-%
-%    In this demo, we use an object detection network using darknet's YOLO
-%    approach. Darknet is called extremely inefficient and the entire network 
-%    is loaded from disk for every new image - hence, this is just a
-%    what-is-possible showcase. If interfaced properly, yolo-models do
-%    offer realtime capability (~30fps for medium-sized models and GPU
-%    support).
+%    
 %
 %  INPUT
 %    
@@ -29,22 +21,11 @@ function str_results_all = demo_only_detection
 
     %% settings for 1 - detect and localize faces
     str_detection = [];
-    
-    % use detection model
-    str_face_detector                   = struct('name', 'Run Yolo Detecion Model via Terminal', 'mfunction', @face_detector_yolo_via_terminal );
+
+    str_face_detector                   = struct('name', 'ground truth', 'mfunction', @face_detector_ground_truth );
     str_settings_tmp                    = [];
     str_settings_tmp.s_fn               = '';
-    str_settings_tmp.b_show_detections  = false;
-    %
-    global s_path_to_darknet;
-    str_settings_tmp.s_path_to_darknet  = s_path_to_darknet;
-    str_settings_tmp.s_path_to_cfg      = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/yolo-for-zoo.cfg';
-    str_settings_tmp.s_path_to_weights  = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/yolo_zoo_single_class/yolo-for-zoo_20000.weights';
-    str_settings_tmp.s_fn_class_labels  = '/home/freytag/experiments/2016-04-14-yolo-ape-detection/chimp_zoo_new/classnames_zoo_single_class.txt';
-    str_settings_tmp.s_fn_boxes_tmp     = '/tmp/boxes_tmp.txt';
-    str_settings_tmp.f_thresh           = 0.1;
-    str_settings_tmp.f_nms              = 0.5;
-   
+    str_settings_tmp.b_show_detections  = false;  
 
     %
     str_settings_tmp.str_settings_detection ...
@@ -60,7 +41,7 @@ function str_results_all = demo_only_detection
 
 
     %% settings for 2 - extract features of every face
-    str_feature_extraction  = [];% that's the overall struct for everything which is identification-related
+        str_feature_extraction  = [];% that's the overall struct for everything which is identification-related
     % we always need to extract features... so no need for a separate flag
 
     % set this overall struct for identification to the settings struct for the
@@ -71,41 +52,99 @@ function str_results_all = demo_only_detection
     %% settings for 3.1 - decide for known/unknown of each face hypothesis (open-set)
     str_settings_novelty = [];% that's the overall struct for everything which is identification-related
     str_settings_novelty.b_do_novelty_detection  = false;
-    %
+
+    % this is the actual method
+    str_novelty_detector        = struct('name', 'Ground Truth Novelty', 'mfunction', @novelty_detector_ground_truth );
+
+    % this will be the config struct
+    str_settings_tmp   = []; 
+
+    % set method and config to overall struct
+    str_novelty_detection.str_novelty_detector = str_novelty_detector;
+    str_novelty_detection.str_settings_novelty_detection ...
+                                               = str_settings_tmp;
     % set this overall struct for identification to the settings struct for the
     % entire pipeline
-    str_settings.str_novelty_detection         = str_settings_novelty;
+    str_settings.str_novelty_detection         = str_novelty_detection;
     
     
-    %% settings for 3.2 - classify each face hypothesis (closed-sed)
+       %% settings for 3.2 - classify each face hypothesis (closed-sed)
     str_identification = []; % that's the overall struct for everything which is identification-related
-    str_identification.b_do_identification  = false;
-    %
+    str_identification.b_do_identification  = true;
+
+
+    % this is the actual method
+    str_identifier                    = struct('name', 'Ground Truth IDs', 'mfunction', @face_identifier_ground_truth );
+
+    % this will be the config struct
+    str_settings_tmp   = []; 
+
+    % set method and config to overall struct
+    str_identification.str_identifier       = str_identifier;
+    str_identification.str_settings_identification ...
+                                            = str_settings_tmp;
     % set this overall struct for identification to the settings struct for the
     % entire pipeline
-    str_settings.str_identification    = str_identification;
+    str_settings.str_identification         = str_identification;
+
 
 
     %% settings for 4 estimate age of each face hypothesis
     str_age_estimation = []; % that's the overall struct for everything which is identification-related
-    str_age_estimation.b_do_age_estimation  = false;
-    %
+    str_age_estimation.b_do_age_estimation  = true;
+
+
+
+    % this is the actual method
+    str_age_estimator = struct('name', 'Ground Truth Age', 'mfunction', @age_estimator_ground_truth );
+
+    % this will be the config struct
+    str_settings_tmp   = [];
+
+    % set method and config to overall struct
+    str_age_estimation.str_age_estimator  ...
+                                      = str_age_estimator;
+    str_age_estimation.str_settings_age_estimation ...
+                                      = str_settings_tmp;
     % set this overall struct for identification to the settings struct for the
     % entire pipeline
     str_settings.str_age_estimation   = str_age_estimation;
 
     %% settings for 5 estimate age group of each face hypothesis
     str_age_group_estimation = []; % that's the overall struct for everything which is identification-related
-    str_age_group_estimation.b_do_age_group_estimation  = false;
-    %
+    str_age_group_estimation.b_do_age_group_estimation  = true;
+
+    % this is the actual method
+    str_age_group_estimator = struct('name', 'Ground Truth Age Group', 'mfunction', @age_group_classifier_ground_truth );
+
+    % this will be the config struct
+    str_settings_tmp   = [];
+
+    % set method and config to overall struct
+    str_age_group_estimation.str_age_group_estimator  ...
+                                      = str_age_group_estimator;
+    str_age_group_estimation.str_settings_age_group_estimation ...
+                                      = str_settings_tmp;
     % set this overall struct for identification to the settings struct for the
     % entire pipeline
     str_settings.str_age_group_estimation   = str_age_group_estimation;
 
+
     %% settings for 6 estimate gender of each face hypothesis
     str_gender_estimation = []; % that's the overall struct for everything which is identification-related
-    str_gender_estimation.b_do_gender_estimation  = false;
-    %
+    str_gender_estimation.b_do_gender_estimation  = true;
+
+    % this is the actual method
+    str_gender_estimator = struct('name', 'Ground Truth Gender', 'mfunction', @gender_classifier_ground_truth );
+
+    % this will be the config struct
+    str_settings_tmp   = [];
+
+    % set method and config to overall struct
+    str_gender_estimation.str_gender_estimator  ...
+                                       = str_gender_estimator;
+    str_gender_estimation.str_settings_gender_estimation ...
+                                       = str_settings_tmp;
     % set this overall struct for identification to the settings struct for the
     % entire pipeline
     str_settings.str_gender_estimation = str_gender_estimation;
@@ -154,7 +193,7 @@ function str_results_all = demo_only_detection
 
         % adapt nasty image-fn-specific gt-settings
         str_settings.str_face_detection.str_settings_face_detection.s_fn             = s_fn;
-        
+
         if ( str_settings.b_write_results )
             idxDot   = strfind ( s_fn, '.' );
             idxSlash = strfind ( s_fn, '/'  );
