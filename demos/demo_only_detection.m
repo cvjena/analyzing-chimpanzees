@@ -118,8 +118,7 @@ function str_results_all = demo_only_detection
     
 
     %% specify the test images
-    % %option 1
-    % %first face is in training set - this is the corresponding image
+    % %option 1 - test on 2 provided images
     s_images = { sprintf( '%sdemos/data/Alex_25-06-10_T00_02_09.png', s_path_to_chimp_repo ), ...
                  sprintf( '%sdemos/data/Alex_30-06-10_1_T00_00_00_Jahaga.png', s_path_to_chimp_repo ) ...
                };
