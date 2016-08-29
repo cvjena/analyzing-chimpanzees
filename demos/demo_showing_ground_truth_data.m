@@ -202,6 +202,6 @@ function str_results_all = demo_showing_ground_truth_data
 
         % go go go ...
         str_results = pipeline_all_about_apes ( image, str_settings );
-        str_results_all{ i_perm(i_imgIdx) } = str_results_all;
+        str_results_all{ i_perm(i_imgIdx) } = str_results;
     end
 end

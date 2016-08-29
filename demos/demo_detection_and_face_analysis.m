@@ -1,13 +1,26 @@
-function str_results_all = test_pipeline
-% function str_results_all = test_pipeline
+function str_results_all = demo_detection_and_face_analysis
+% function str_results_all = demo_detection_and_face_analysis
 %  BRIEF
-%    
-%
-%  INPUT
-%    
-%    str_settings -- struct, optional, the following fields are supported
+%    Demo of the entire pipeline for analyzing ape images:
+%    1) YOLO for detecting faces (this takes a lot of time since we load the
+%       network into memory upon each detection call)
+%    2) Features as CNN codes from AlexNet using Caffe
+%    3.1) No novelty detection / rejection
+%    3.2) Identification with Linear SVM
+%    4) Age regression with Gaussian process regression
+%    5) Age group estimation with Linear SVM
+%    6) Gender estimation with Linear SVM
 %
 %  OUTPUT
+%      str_results_all
+%    
+%
+%  REQUIREMENTS
+%    1) darknet for object detection
+%    2) caffe for feature extraction
+%    3) LibLinear for classification
+%    4) gpml for regression
+%    -> see initWorkspaceChimpanzees.m
 % 
 %  author: Alexander Freytag
 
@@ -82,7 +95,8 @@ function str_results_all = test_pipeline
     % been trained on cnn activations for your selected network!s
     %
     global s_path_to_caffe;
-    s_path_to_caffe_models = '/home/alex/lib/caffe_models/';
+    %TODO adapt that!
+    s_path_to_caffe_models = '/home/freytag/lib/caffe_models/';
     %
     % select a CNN precomputed from ImageNet
     s_selected_model_deploy  = 'bvlc_reference_caffenet/deploy.prototxt';
@@ -185,39 +199,41 @@ function str_results_all = test_pipeline
 
     %% settings for 4 estimate age of each face hypothesis
     str_age_estimation = []; % that's the overall struct for everything which is identification-related
-    str_age_estimation.b_do_age_estimation  = false;
+    str_age_estimation.b_do_age_estimation  = true;
 
 
-%     % this is the actual method
-%     str_age_estimator = struct('name', 'GP regression', 'mfunction', @age_regressor_GP );
-%     
-%     % this will be the config struct
-%     str_settings_tmp   = [];     
-%         
-%     s_path_to_age_model = sprintf('%sdemos/models/age/model_age_estimation_ChimpZoo.mat', s_path_to_chimp_repo );
-%     res = load (  s_path_to_age_model, 'model', 'settingsGP', 'idxTrain', 's_destFeat' );  
-%     
-%     featCNN = load ( res.s_destFeat );
-%     if ( isfield ( featCNN, 'struct_feat' ) ) % compatibility with MatConvNet
-%         featCNN = cell2mat(featCNN.struct_feat);
-%     elseif ( isfield ( featCNN, 'feat' ) && isfield ( featCNN.feat, 'name' ) )   % compatibility with Caffe
-%         featCNN = featCNN.feat.(featCNN.feat.name);
-%     else
-%         error ( 'CNN features not readable!' )
-%     end
-%     featTrain = featCNN( :, res.idxTrain );
-% 
-%     str_settings_tmp.gpmodel    = res.model;
-%     str_settings_tmp.settingsGP = res.settingsGP;
-%     str_settings_tmp.dataTrain  = featTrain;
-%     clear 'featCNN';
-%     clear 'res';
-% 
-%     % set method and config to overall struct
-%     str_age_estimation.str_age_estimator  ...
-%                                       = str_age_estimator;
-%     str_age_estimation.str_settings_age_estimation ...
-%                                       = str_settings_tmp;
+    % this is the actual method
+    str_age_estimator = struct('name', 'GP regression', 'mfunction', @age_regressor_GP );
+    
+    % this will be the config struct
+    str_settings_tmp   = [];     
+        
+    s_path_to_age_model = sprintf('%sdemos/models/age/model_age_estimation_ChimpZoo.mat', s_path_to_chimp_repo );
+    res = load (  s_path_to_age_model, 'model', 'settingsGP', 'idxTrain', 's_destFeat' );  
+    
+    res.s_destFeat          = sprintf('%s%s', s_path_to_chimp_repo, res.s_destFeat );
+    
+    featCNN = load ( res.s_destFeat );
+    if ( isfield ( featCNN, 'struct_feat' ) ) % compatibility with MatConvNet
+        featCNN = cell2mat(featCNN.struct_feat);
+    elseif ( isfield ( featCNN, 'feat' ) && isfield ( featCNN.feat, 'name' ) )   % compatibility with Caffe
+        featCNN = featCNN.feat.(featCNN.feat.name);
+    else
+        error ( 'CNN features not readable!' )
+    end
+    featTrain = featCNN( :, res.idxTrain );
+
+    str_settings_tmp.gpmodel    = res.model;
+    str_settings_tmp.settingsGP = res.settingsGP;
+    str_settings_tmp.dataTrain  = featTrain;
+    clear 'featCNN';
+    clear 'res';
+
+    % set method and config to overall struct
+    str_age_estimation.str_age_estimator  ...
+                                      = str_age_estimator;
+    str_age_estimation.str_settings_age_estimation ...
+                                      = str_settings_tmp;
     % set this overall struct for identification to the settings struct for the
     % entire pipeline
     str_settings.str_age_estimation   = str_age_estimation;
@@ -325,14 +341,12 @@ function str_results_all = test_pipeline
 
 
         % go go go ...
-        try
-            str_results = pipeline_all_about_apes ( image, str_settings );
-        catch
-            str_results = [];
-        end
-        str_results_all{ i_perm(i_imgIdx) } = str_results_all;
+        str_results = pipeline_all_about_apes ( image, str_settings );
+
+        str_results_all{ i_perm(i_imgIdx) } = str_results;
     end
 
     % clear loaded networks and other gpu memory allocated by caffe
     caffe.reset_all;
+    
 end

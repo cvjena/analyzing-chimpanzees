@@ -160,6 +160,6 @@ function str_results_all = demo_only_detection
 
         % go go go ...
         str_results = pipeline_all_about_apes ( image, str_settings );
-        str_results_all{ i_perm(i_imgIdx) } = str_results_all;
+        str_results_all{ i_perm(i_imgIdx) } = str_results;
     end
 end
