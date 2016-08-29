@@ -18,7 +18,7 @@ function myOut = getFieldWithDefault ( myStruct, myField, myDefault )
 % author: Alexander Freytag
 % date  : 04-03-2014 ( dd-mm-yyyy )
 
-    if ( ~isempty(myStruct) && isfield(myStruct, myField) && ~isempty( myStruct.( myField ) ))
+    if ( ~isempty(myStruct) && isfield(myStruct, myField) && ~( ~ischar(myDefault) && isempty( myStruct.( myField ) ))   )
         myOut = myStruct.( myField );
     else
         myOut = myDefault;
