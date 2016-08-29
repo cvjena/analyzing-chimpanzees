@@ -50,9 +50,6 @@ function initWorkspaceChimpanzees
         CAFFETOOLSDIR         = '/home/freytag/code/matlab/caffe_tools/';
         
         % identification
-        s_dest_liblinearbuild = sprintf( '%smatlab-%s', '/home/freytag/code/3rdParty/liblinear-1.93/', s_hostname );    
-        LIBLINEARDIR          = s_dest_liblinearbuild;
-        
         LIBLINEARWRAPPERDIR   = '/home/freytag/code/matlab/classifiers/liblinearWrapper/';
         
         % age regression
@@ -199,8 +196,9 @@ function initWorkspaceChimpanzees
     
     %% 3rd party, untouched   
     
+    % feature extraction
     if ( isempty(CAFFETOOLSDIR) )
-        fprintf('initWSChimp-WARNING - no CAFFETOOLSDIR dir found on your machine. Code is available at git@dbv.inf-cv.uni-jena.de:matlab-tools/caffe_tools.git \n');
+        fprintf('initWSChimp-WARNING - no CAFFETOOLSDIR dir found on your machine. Code is available at https://github.com/cvjena/caffe_tools  \n');
     else
         currentDir = pwd;
         cd ( CAFFETOOLSDIR );
@@ -208,17 +206,9 @@ function initWorkspaceChimpanzees
         cd ( currentDir );      
     end
     
-    if ( isempty(LIBLINEARDIR) )
-        fprintf('initWSChimp-WARNING - no LIBLINEARDIR dir found on your machine. Code is available at https://www.csie.ntu.edu.tw/~cjlin/liblinear/ \n');
-    else
-        b_recursive             = true; 
-        b_overwrite             = true;
-        addPathSafely ( LIBLINEARDIR, b_recursive, b_overwrite );        
-    end  
-    
-    
+    % identification
     if ( isempty(LIBLINEARWRAPPERDIR) )
-        fprintf('initWSChimp-WARNING - no LIBLINEARWRAPPERDIR dir found on your machine. Code is available at cvgj-gitlab \n');
+        fprintf('initWSChimp-WARNING - no LIBLINEARWRAPPERDIR dir found on your machine. Code is available at https://github.com/cvjena/liblinearwrapper \n');
     else
        currentDir = pwd;
        cd ( LIBLINEARWRAPPERDIR );
@@ -226,6 +216,7 @@ function initWorkspaceChimpanzees
        cd ( currentDir );       
     end     
     
+    % age regression
     if ( isempty(GPMLDIR) )
         fprintf('initWSChimp-WARNING - no GPMLDIR dir found on your machine. Code is available at http://www.gaussianprocess.org/gpml/code/matlab/doc/ \n');
     else
@@ -234,6 +225,7 @@ function initWorkspaceChimpanzees
         addPathSafely ( GPMLDIR, b_recursive, b_overwrite );     
     end      
     
+    % face detection
     if ( isempty(DARKNETDIR) )
         fprintf('initWSChimp-WARNING - no DARKNETDIR dir found on your machine. Code is available at https://github.com/cvjena/darknet \n');
     else
@@ -251,7 +243,7 @@ function initWorkspaceChimpanzees
     
     % datasets
     if ( isempty(CHIMPFACEDATASETDIR) )
-        fprintf('initWSChimp-WARNING - no ChimpFaces dataset found. The dataset with loading functionality is available at git@github.com:cvjena/chimpanzee_faces.git \n');
+        fprintf('initWSChimp-WARNING - no ChimpFaces dataset found. The dataset with loading functionality is available at https://github.com/cvjena/chimpanzee_faces \n');
     else
         % make loading functionality known to matlab
         currentDir = pwd;
@@ -266,7 +258,6 @@ function initWorkspaceChimpanzees
     % feature extraction
     clear( 'CAFFETOOLSDIR' );  
     % identification    
-    clear( 'LIBLINEARDIR' ); 
     clear( 'LIBLINEARWRAPPERDIR' );
     % age regression
     clear( 'GPMLDIR' );
