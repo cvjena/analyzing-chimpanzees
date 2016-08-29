@@ -5,7 +5,7 @@ function initWorkspaceChimpanzees
 % 
 % BRIEF:
 %   Add local subfolders and 3rd party libraries to Matlabs work space.
-%   Needs to be adapted to your system!
+%   NEEDS TO BE ADAPTED TO YOUR SYSTEM!
 % 
 % 
 %   Exemplary call from external position:
@@ -15,6 +15,9 @@ function initWorkspaceChimpanzees
 %        initWorkspaceChimpanzees;
 %        cd ( currentDir );
 % 
+%   Provides s_path_to_chimp_face_datasets as global variable.
+% 
+%   Author: Alexander Freytag
 
     %% make current path known as global variable
     % useful for demos etc.
@@ -34,22 +37,32 @@ function initWorkspaceChimpanzees
     GPMLDIR             = [];
     
     % face detection
-    DARKNETDIR          = [];     
+    DARKNETDIR          = []; 
+    
+    % datasets
+    CHIMPFACEDATASETDIR = [];
         
     if strcmp( getenv('USER'), 'freytag')     
         [~, s_hostname]       = system( 'hostname' );
         s_hostname            = s_hostname ( 1:(length(s_hostname)-1) ) ;    
         
+        % feature extraction
         CAFFETOOLSDIR         = '/home/freytag/code/matlab/caffe_tools/';
         
+        % identification
         s_dest_liblinearbuild = sprintf( '%smatlab-%s', '/home/freytag/code/3rdParty/liblinear-1.93/', s_hostname );    
         LIBLINEARDIR          = s_dest_liblinearbuild;
         
         LIBLINEARWRAPPERDIR   = '/home/freytag/code/matlab/classifiers/liblinearWrapper/';
         
+        % age regression
         GPMLDIR               = '/home/freytag/code/matlab/gpml/';
         
+        % face detection
         DARKNETDIR            = sprintf( '/home/freytag/lib/darknet_%s/', s_hostname );
+        
+        % datasets
+        CHIMPFACEDATASETDIR   =  '/home/freytag/data/chimpanzee_faces/';
         
     elseif strcmp( getenv('USER'), 'alex') 
         
@@ -109,16 +122,7 @@ function initWorkspaceChimpanzees
     s_pathMisc              = fullfile(pwd, 'misc');
     addPathSafely ( s_pathMisc, b_recursive, b_overwrite )
     clear ( 's_pathMisc' );       
-    
-    %%    
-    % load data, splits, etc.
-    b_recursive             = true; 
-    b_overwrite             = true;
-    s_pathData              = fullfile(pwd, 'data');
-    addPathSafely ( s_pathData, b_recursive, b_overwrite )
-    clear ( 's_pathData' );       
-    
-    
+       
     %%    
     % evaluation measures
     b_recursive             = true; 
@@ -244,14 +248,32 @@ function initWorkspaceChimpanzees
             fprintf('initWSChimp-WARNING - Darknet not yet compiled! \n');
         end
     end    
+    
+    % datasets
+    if ( isempty(CHIMPFACEDATASETDIR) )
+        fprintf('initWSChimp-WARNING - no ChimpFaces dataset found. The dataset with loading functionality is available at git@github.com:cvjena/chimpanzee_faces.git \n');
+    else
+        % make loading functionality known to matlab
+        currentDir = pwd;
+        cd ( CHIMPFACEDATASETDIR );
+        initWorkspaceChimpanzeeFacesDataset;
+        cd ( currentDir );
+    end     
           
     
     %% clean up    
-    clear( 'CAFFETOOLSDIR' );    
+    %
+    % feature extraction
+    clear( 'CAFFETOOLSDIR' );  
+    % identification    
     clear( 'LIBLINEARDIR' ); 
     clear( 'LIBLINEARWRAPPERDIR' );
+    % age regression
     clear( 'GPMLDIR' );
-    clear( 'DARKNETDIR' );    
-    
+    % face detection
+    clear( 'DARKNETDIR' );
+    % datasets
+    clear( 'CHIMPFACEDATASETDIR' );
+
         
 end

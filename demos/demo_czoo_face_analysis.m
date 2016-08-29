@@ -292,17 +292,39 @@ function str_results_all = demo_czoo_face_analysis
 
 %     % %option 2
 %     % loop over images of the CZoo dataset
-% 
-%     s_destDatasetUncropped                = '/home/freytag/experiments/2015-11-18-schimpansen-leipzig/images/filelist_ChimpZoo.txt';
-%     % fileId value - open the file
-%     fid = fopen( s_destDatasetUncropped );
-%     % reads data from open test file into cell array (%s -> read string)
-%     s_images = textscan(fid, '%s', 'Delimiter','\n');
-%     % get all images
-%     s_images = s_images{1};
+%     
+%     % set the folder which contains the data we sent in february
+%     % requires the *_information.mat and filelist_face_images.txt
 %     %
-%     fclose ( fid );
-
+%     global s_path_to_chimp_face_datasets;
+%     
+%     s_destCZoo          = sprintf( '%s/datasets_cropped_chimpanzee_faces/data_CZoo/', s_path_to_chimp_face_datasets );
+%     
+%     % in this demo, we only need the image's filenames, since we
+%     % do not compare against GT values
+%     settingsLoad.b_load_age                      = false;
+%     settingsLoad.b_load_gender                   = false;
+%     settingsLoad.b_load_age_group                = false;
+%     settingsLoad.b_load_identity                 = false;
+%     settingsLoad.b_load_keypoint_information     = false;
+%     dataset_chimpansees                          = load_chimpansees( s_destCZoo, settingsLoad );
+% 
+%     s_destSplits   = sprintf( '%s/demo_access_data/dataset_splits_CZoo.mat' , s_path_to_chimp_face_datasets);
+% 
+%     load ( s_destSplits,  'dataset_splits' );
+% 
+%     % use first split    
+%     datasplits = dataset_splits{1};
+%     idxTrain   = datasplits.idxTrain;
+%     idxTest    = datasplits.idxTest;        
+% 
+%     % these are the file names to the cropped images, i.e., they only
+%     % contain bounding boxes of the ape's faces
+%     s_fn_images_train = dataset_chimpansees.s_images( idxTrain );
+%     s_fn_images_test  = dataset_chimpansees.s_images( idxTest );
+% 
+%     % let's work on test images only in this demo.
+%     s_images = s_fn_images_test;
 
     str_results_all = {};
     
