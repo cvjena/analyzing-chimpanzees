@@ -1,6 +1,8 @@
 function str_out = feature_extractor_image_pixels ( image, str_boxes, str_settings )
 % BRIEF
-%  Crop subimages according to the provided detections and return the subimage without further processing
+%  Crop subimages according to the provided detections and return the
+%  subimage without further processing.
+%  Useful if your models expect image regions as input (e.g., common CNNs).
 % 
 %  INPUT
 %   image      -- color image or gray value image, given as matrix 

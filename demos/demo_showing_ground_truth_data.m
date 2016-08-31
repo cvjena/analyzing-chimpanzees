@@ -38,7 +38,7 @@ function str_results_all = demo_showing_ground_truth_data
 
 
     %% settings for 2 - extract features of every face
-        str_feature_extraction  = [];% that's the overall struct for everything which is identification-related
+    str_feature_extraction  = [];% that's the overall struct for everything which is identification-related
     % we always need to extract features... so no need for a separate flag
 
     % set this overall struct for identification to the settings struct for the

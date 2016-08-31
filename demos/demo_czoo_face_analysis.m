@@ -25,11 +25,6 @@ function str_results_all = demo_czoo_face_analysis
 
     %% set up required directories
     global s_path_to_chimp_repo;
-    s_cacheDir = sprintf('%spipeline/cache/', s_path_to_chimp_repo );
-
-    if ( ~(exist( s_cacheDir, 'dir' ) ) )
-        mkdir ( s_cacheDir );
-    end
 
     %% settings for 1 - detect and localize faces
     str_detection = [];
