@@ -1,4 +1,4 @@
-function results = chimpansee_age_regression( dataset_chimpansees, settings )
+function str_results = chimpansee_age_regression( dataset_chimpansees, settings )
 
     %% load settings
     if ( nargin < 2 ) 
@@ -7,7 +7,6 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
     
     settingsData = getFieldWithDefault( settings, 'settingsData', [] );
     datasplits = getFieldWithDefault ( settings, 'datasplits', struct( 'idxTrain', {}, 'idxTest', {} ) );    
-    results    = struct ( 's_name', {}, 'f_arr', {}, 'datasplits', datasplits);
     
     b_verbose  =  getFieldWithDefault ( settings, 'b_verbose', true );    
 
@@ -82,7 +81,9 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
         ages_train = dataset_chimpansees.f_ages( idxTrain )';
         loghyper.mean = mean ( ages_train  );        
     end    
-    b_do_optimization = true ;
+    
+    
+    b_do_optimization = getFieldWithDefault ( settings, 'b_do_optimization', false );
     
     if ( b_do_optimization ) 
         %NOTE the gp implementation leads to useless results due to the
@@ -99,13 +100,14 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
 %         i_length = -100;        
 %         
 %         % optimize hyper parameters based on the marginal likelihood
+%         %NOTE: was too cumbersome in our experiments...
 %         [loghyper, ~, ~]  = minimize(loghyper,@gp,i_length, infFct, meanFct, covFunc, likFct, dataTrain', labelsTrain');        
 
-        f_paramNoise = -7:1:2;
-        f_paramNoise = (2*ones(size(f_paramNoise))).^(f_paramNoise);
-        f_paramBW    = 1:10;
+
+        f_paramNoise = getFieldWithDefault ( settings, 'f_paramNoise', (2*ones(size(-7:1:2))).^(-7:1:2) );
+        f_paramBW    = getFieldWithDefault ( settings, 'f_paramBW', 1:10 );
         scoresParam  = zeros ( 1, length(f_paramBW) * length(f_paramNoise) );
-        i_numFolds   = 5;
+        i_numFolds   = getFieldWithDefault ( settings, 'i_numFolds', 5 );
         fold_splits  = zeros(length(labelsTrain), i_numFolds);
         
         for iRun=1:i_numFolds
@@ -113,10 +115,13 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
         end
 
         progressbar ( 0 );
+        %
         for idxBW = 1:length(f_paramBW)
             loghyper.cov = f_paramBW(idxBW);
+            
             for idxParam=1:length(f_paramNoise)
                 loghyper.lik = f_paramNoise(idxParam);
+                gpnoise      = f_paramNoise(idxParam);
 
                 for iRun=1:i_numFolds
                     
@@ -146,6 +151,7 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
                 progressbar ( ((idxBW-1)*length(f_paramBW) + idxParam) / (length(f_paramBW) * length(f_paramNoise)) );
             end
         end
+        %
         progressbar ( 1 );
         
         [~,idxMin] = min(scoresParam);
@@ -153,6 +159,7 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
 
         loghyper.cov = f_paramBW(idxBW);
         loghyper.lik = f_paramNoise(idxNoise);
+        gpnoise      = f_paramNoise(idxNoise);
 
         K           = feval( covFunc, loghyper.cov, dataTrain', dataTrain');
         model.L     = chol(K+exp(2*gpnoise)*eye(length(labelsTrain)))';   %chol ( K/sn2 + eye ); sn2 = exp(2*gpnoise);  model.L'\(model.L\labelsTrain/sn2') 
@@ -185,18 +192,19 @@ function results = chimpansee_age_regression( dataset_chimpansees, settings )
         disp ( sprintf('Regression error L1: %f', f_error) )
     end
     
-    
-    results                 = [];
-    results.scoresParam     = scoresParam;
-    results.f_error         = f_error;        
-    %
-    mydatasetsplit.idxTrain = idxTrain;
-    mydatasetsplit.idxTest  = idxTest;    
-    results.datasplits      = mydatasetsplit;    
-    %
-    results.age_est         = age_est;    
-    results.labelsTest      = labelsTest;    
-    results.labelsTrain     = labelsTrain;
+    if ( nargout > 0 )
+        str_results                 = [];
+        str_results.scoresParam     = scoresParam;
+        str_results.f_error         = f_error;        
+        %
+        mydatasetsplit.idxTrain     = idxTrain;
+        mydatasetsplit.idxTest      = idxTest;    
+        str_results.datasplits      = mydatasetsplit;    
+        %
+        str_results.age_est         = age_est;    
+        str_results.labelsTest      = labelsTest;    
+        str_results.labelsTrain     = labelsTrain;
+    end
     
     
 end

@@ -186,7 +186,7 @@ function initWorkspaceChimpanzees
     
     %%    
     % everything for our nice demos
-    b_recursive             = true; 
+    b_recursive             = false; 
     b_overwrite             = true;
     s_pathDemos             = fullfile(pwd, 'demos');
     addPathSafely ( s_pathDemos, b_recursive, b_overwrite )

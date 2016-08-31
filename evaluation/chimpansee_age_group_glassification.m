@@ -59,10 +59,10 @@ function results = chimpansee_age_group_glassification( dataset_chimpansees, set
     end 
     
     dataTrain   = featCNN( :,idxTrain );
-    labelsTrain = dataset_chimpansees.f_labels_age_groups( idxTrain )';
+    labelsTrain = dataset_chimpansees.f_age_groups( idxTrain )';
     
     dataTest   = featCNN( :,idxTest );
-    labelsTest = dataset_chimpansees.f_labels_age_groups( idxTest )';
+    labelsTest = dataset_chimpansees.f_age_groups( idxTest )';
     
     %% train classification model
     

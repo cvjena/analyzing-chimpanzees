@@ -107,7 +107,8 @@ function results = chimpansee_gender_estimation( dataset_chimpansees, settings )
     [predicted_gender, f_arr, scores] = liblinear_test ( labelsTest', sparse(double(dataTest')), svmmodel, settingsLibLinear );
     
     % compute auc evaluation
-    [tp, fp] = roc(labelsTest==f_unique_gender(1), scores);
+    f_unique_gender_binary = unique ( labelsTrain );  
+    [tp, fp] = roc(labelsTest==f_unique_gender_binary(1), scores);
     f_auc    = auroc(tp,fp);
    
    
@@ -125,7 +126,7 @@ function results = chimpansee_gender_estimation( dataset_chimpansees, settings )
     mydatasetsplit.idxTest      = idxTest;    
     results.datasplits          = mydatasetsplit;    
     %
-    results.predicted_gender = predicted_gender;    
+    results.predicted_gender    = predicted_gender;    
     results.labelsTest          = labelsTest;    
     results.labelsTrain         = labelsTrain;
     
