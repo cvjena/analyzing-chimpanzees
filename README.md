@@ -59,7 +59,7 @@ Before running the demos, make sure to download some pre-trained models from [do
 	 - run `demo_detection_and_face_analysis.m`
 	 - 	 note: requires pre-trained models 
 
-![Results of `demo_czoo_face_analysis.m`](https://github.com/cvjena/analyzing-chimpanzees/tree/master/analyzing-chimpanzees/demo_czoo_face_analysis_output_2.png)
+![Results of `demo_czoo_face_analysis.m`](https://github.com/cvjena/analyzing-chimpanzees/blob/master/demos/results/demo_czoo_face_analysis_output_2.png)
 
 
 
